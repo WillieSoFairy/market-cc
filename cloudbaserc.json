@@ -1,0 +1,10 @@
+{
+  "envId": "cc-project-0go7s6qp9db55d3b",
+  "region": "ap-guangzhou",
+  "functionRoot": "./app/functions",
+  "functions": [
+    {
+      "name": "node-app"
+    }
+  ]
+}
