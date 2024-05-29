@@ -5,70 +5,68 @@
         </a-col>
     </a-row>
     <a-row>
-        <a-col :span="6" :offset="9">
-            <a-form :model="formState" name="normal_login" class="login-form" @finish="onFinish"
-                @finishFailed="onFinishFailed">
+        <a-col :span="6" :offset="6">
+            <a-form :model="formState" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }"
+                autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
                 <a-form-item label="用户名" name="username"
-                    :rules="[{ required: true, message: '请输入用户名' }]">
-                    <a-input v-model:value="formState.username">
-                        <template #prefix>
-                            <UserOutlined class="site-form-item-icon" />
-                        </template>
-                    </a-input>
+                    :rules="[{ required: true, message: 'Please input your username!' }]">
+                    <a-input v-model:value="formState.username" />
                 </a-form-item>
 
                 <a-form-item label="密码" name="password"
-                    :rules="[{ required: true, message: '请输入密码' }]">
-                    <a-input-password v-model:value="formState.password">
-                        <template #prefix>
-                            <LockOutlined class="site-form-item-icon" />
-                        </template>
-                    </a-input-password>
+                    :rules="[{ required: true, message: 'Please input your password!' }]">
+                    <a-input-password v-model:value="formState.password" />
                 </a-form-item>
 
-                <a-form-item>
-                    <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
-                        登入
-                    </a-button>
+                <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
+                    <a-checkbox v-model:checked="formState.remember">下次自动登入</a-checkbox>
+                </a-form-item>
+
+                <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+                    <a-button type="primary" html-type="submit" @click="login">登入</a-button>
                 </a-form-item>
             </a-form>
         </a-col>
     </a-row>
 </template>
-<script lang="ts" setup>
-import { reactive, computed } from 'vue';
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
-interface FormState {
-    username: string;
-    password: string;
-    remember: boolean;
-}
-const formState = reactive<FormState>({
+
+<script setup>
+import { ref } from 'vue';
+import cloudbase from '@cloudbase/js-sdk'
+
+const app = cloudbase.init({
+    env: import.meta.env.VITE_TCB_ENVID,
+    region: import.meta.env.VITE_TCB_REGION
+});
+const auth = app.auth();
+
+const formState = ref({
     username: '',
     password: '',
     remember: true,
 });
-const onFinish = (values: any) => {
-    console.log('Success:', values);
-};
 
-const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-};
-const disabled = computed(() => {
-    return !(formState.username && formState.password);
-});
+async function login() {
+    const loginState = await auth.getLoginState();
+    let loginRes;
+    if (!loginState) {
+        await app.callFunction({
+            name: "login",
+            data: { "user_name": formState.value.username, "pwd": formState.value.password }
+        }).then((res) => {
+            loginRes = res.result;
+        });
+        console.log(loginRes);
+        if (loginRes.ticket !== '') {
+            await auth.customAuthProvider().signIn(loginRes.ticket);
+            console.log('Success');
+        }
+        else {
+            console.log('Wrong');
+        }
+    }
+    else {
+        console.log('Logged In');
+    }
+}
 </script>
-<style scoped>
-#components-form-demo-normal-login .login-form {
-    max-width: 300px;
-}
-
-#components-form-demo-normal-login .login-form-forgot {
-    float: right;
-}
-
-#components-form-demo-normal-login .login-form-button {
-    width: 100%;
-}
-</style>
