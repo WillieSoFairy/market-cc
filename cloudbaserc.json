@@ -5,6 +5,15 @@
   "functions": [
     {
       "name": "node-app"
+    },
+    {
+      "name": "login",
+      "runtime": "Nodejs12.16",
+      "installDependency": true,
+      "envVariables": {
+        "ENV_ID": "cc-project-0go7s6qp9db55d3b",
+        "KEY_PATH": "./tcb_custom_login_key.json"
+      }
     }
   ]
 }
