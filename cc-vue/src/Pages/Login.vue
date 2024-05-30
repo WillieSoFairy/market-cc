@@ -32,13 +32,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import cloudbase from '@cloudbase/js-sdk'
-
-const app = cloudbase.init({
-    env: import.meta.env.VITE_TCB_ENVID,
-    region: import.meta.env.VITE_TCB_REGION
-});
-const auth = app.auth();
+import { useRouter } from 'vue-router';
+import { tcb, auth } from '../tcb/index.js'
 
 const formState = ref({
     username: '',
@@ -46,11 +41,16 @@ const formState = ref({
     remember: true,
 });
 
+const router = useRouter();
+
 async function login() {
+    console.log(formState.value.username)
+    console.log(formState.value.password)
     const loginState = await auth.getLoginState();
+    console.log(loginState)
     let loginRes;
     if (!loginState) {
-        await app.callFunction({
+        await tcb.callFunction({
             name: "login",
             data: { "user_name": formState.value.username, "pwd": formState.value.password }
         }).then((res) => {
@@ -60,13 +60,14 @@ async function login() {
         if (loginRes.ticket !== '') {
             await auth.customAuthProvider().signIn(loginRes.ticket);
             console.log('Success');
+            router.push('/');
         }
         else {
             console.log('Wrong');
         }
     }
     else {
-        console.log('Logged In');
+        router.push('/');
     }
 }
 </script>

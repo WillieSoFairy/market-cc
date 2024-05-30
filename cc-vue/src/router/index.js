@@ -5,12 +5,14 @@ import Login from '../Pages/Login.vue'
 import SuperAdmin from '../Pages/SuperAdmin.vue'
 import AdminUsers from '../Pages/AdminUsers.vue'
 import AdminHome from '../Pages/AdminHome.vue'
+import { auth } from '../tcb/index.js'
 
 
 const routes = [
-    { path: '/', component: Login },
+    { path: '/login', component: Login, name: 'Login' },
     {
-        path: '/index',
+        path: '/',
+        alia: '/home',
         component: main,
         children: [
             { path: 'form', component: FormTable },
@@ -28,4 +30,15 @@ const routes = [
 const router = createRouter({
     history: createWebHashHistory(), routes
 })
+
+router.beforeEach(async (to, from) => {
+    console.log(to.name)
+    if ((to.name !== 'Login') && (await auth.getLoginState() === null)) {
+        return { name: 'Login' };
+    }
+    else {
+        return true;
+    }
+});
+
 export default router
