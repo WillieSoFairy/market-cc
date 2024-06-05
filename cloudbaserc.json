@@ -14,6 +14,15 @@
         "ENV_ID": "cc-project-0go7s6qp9db55d3b",
         "KEY_PATH": "./tcb_custom_login_key.json"
       }
+    },
+    {
+      "name": "admin_get_users_list",
+      "runtime": "Nodejs12.16",
+      "installDependency": true,
+      "envVariables": {
+        "ENV_ID": "cc-project-0go7s6qp9db55d3b",
+        "REGION": "ap-guangzhou"
+      }
     }
   ]
 }

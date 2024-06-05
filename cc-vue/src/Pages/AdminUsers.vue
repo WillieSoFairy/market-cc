@@ -8,94 +8,50 @@
         <a-col :span="24"><a-button type="primary">新增用户</a-button></a-col>
     </a-row>
     <a-row>
-        <a-col :span="24"><a-table :columns="columns" :data-source="data">
-                <template #headerCell="{ column }">
-                    <template v-if="column.key === 'name'">
-                        <span>
-                            <smile-outlined />
-                            用户名
-                        </span>
-                    </template>
-                </template>
-
-                <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'name'">
-                        <a>
-                            {{ record.name }}
-                        </a>
-                    </template>
-                    <template v-else-if="column.key === 'tags'">
-                        <span>
-                            <a-tag v-for="tag in record.tags" :key="tag"
-                                :color="tag === '管理员' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
-                                {{ tag.toUpperCase() }}
-                            </a-tag>
-                        </span>
-                    </template>
-                    <template v-else-if="column.key === 'action'">
-                        <span>
-                            <a>Invite 一 {{ record.name }}</a>
-                            <a-divider type="vertical" />
-                            <a>Delete</a>
-                            <a-divider type="vertical" />
-                            <a class="ant-dropdown-link">
-                                More actions
-                                <down-outlined />
-                            </a>
-                        </span>
-                    </template>
-                </template>
-            </a-table></a-col>
+        <a-col :span="24">
+            <a-table :columns="columns" :data-source="users_list">
+            </a-table>
+        </a-col>
     </a-row>
 </template>
 <script setup>
+import { tcb, auth } from '../tcb/index.js'
+import { onMounted, ref } from 'vue';
+
+const users_list = ref(null);
+
+onMounted(async () => {
+    const { customUserId } = await auth.getCurrenUser();
+    await tcb.callFunction({
+        name: "admin_get_users_list",
+        data: { "customUserId": customUserId }
+    }).then((res) => {
+        users_list.value = res.result.data.map((x) => { return JSON.parse(x); });
+    });
+    // console.log(users_list.value)
+})
+
 const columns = [
     {
-        name: '用户名',
-        dataIndex: 'name',
-        key: 'name',
+        title: '用户名',
+        dataIndex: 'user_name',
+        key: 'user_name'
     },
     {
-        title: '有效',
-        dataIndex: 'age',
-        key: 'age',
+        title: '昵称',
+        dataIndex: 'alia'
     },
     {
         title: '创建时间',
-        dataIndex: 'address',
-        key: 'address',
+        dataIndex: 'create_date'
     },
     {
         title: '用户权限',
-        key: 'tags',
-        dataIndex: 'tags',
-    },
-    {
-        title: '操作',
-        key: 'action',
-    },
+        dataIndex: 'auth'
+    }
 ];
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['管理员'],
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-];
+const data = ref([
+    { "_id": "e6b39ba86623cf5f002826996a0c69c6", "alia": "Wil", "auth": 0, "create_date": { "$date": 1713622824009 }, "enable": true, "last_login": { "$date": 1713622841277 }, "pwd": "123", "user_name": "admin" },
+    { "_id": "eb644727665864f3000169990bfcba94", "alia": "Wil_B", "auth": 1, "create_date": { "$date": 1713622824009 }, "enable": true, "last_login": { "$date": 1713622841277 }, "pwd": "123", "user_name": "aaa" }
+]);
 </script>

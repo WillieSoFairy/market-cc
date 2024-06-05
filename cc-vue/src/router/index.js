@@ -32,7 +32,6 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-    console.log(to.name)
     if ((to.name !== 'Login') && (await auth.getLoginState() === null)) {
         return { name: 'Login' };
     }
