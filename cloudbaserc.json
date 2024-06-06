@@ -23,6 +23,24 @@
         "ENV_ID": "cc-project-0go7s6qp9db55d3b",
         "REGION": "ap-guangzhou"
       }
+    },
+    {
+      "name": "admin_update_user",
+      "runtime": "Nodejs12.16",
+      "installDependency": true,
+      "envVariables": {
+        "ENV_ID": "cc-project-0go7s6qp9db55d3b",
+        "REGION": "ap-guangzhou"
+      }
+    },
+    {
+      "name": "admin_add_user",
+      "runtime": "Nodejs12.16",
+      "installDependency": true,
+      "envVariables": {
+        "ENV_ID": "cc-project-0go7s6qp9db55d3b",
+        "REGION": "ap-guangzhou"
+      }
     }
   ]
 }
