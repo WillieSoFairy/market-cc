@@ -28,3 +28,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+*tcb_custom_login_key.json
