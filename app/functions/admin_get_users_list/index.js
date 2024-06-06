@@ -6,7 +6,7 @@ const app = tcb.init({
 });
 
 const { env } = app;
-const limit = 1;
+const limit = 50;
 
 exports.main = async (event, context) => {
     const user_id = event.customUserId;
@@ -20,7 +20,8 @@ exports.main = async (event, context) => {
         TableName: 'users',
         MgoOffset: 0,
         Tag: Databases[0].InstanceId,
-        MgoLimit: limit
+        MgoLimit: limit,
+        MgoQuery: JSON.stringify({ "visible": true })
     }
     const init_res = await app.commonService('flexdb').call({
         Action: 'Query',
@@ -47,7 +48,7 @@ async function is_admin(user_id, Databases) {
         MgoOffset: 0,
         Tag: Databases[0].InstanceId,
         MgoLimit: limit,
-        MgoQuery: JSON.stringify({ "_id": user_id, "auth": 0 })
+        MgoQuery: JSON.stringify({ "_id": user_id, "auth": 0, "enable": true })
     }
     const res = await app.commonService('flexdb').call({
         Action: 'Query',
