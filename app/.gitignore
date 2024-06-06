@@ -52,3 +52,5 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+*tcb_custom_login_key.json
