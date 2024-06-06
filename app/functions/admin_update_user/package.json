@@ -1,0 +1,8 @@
+{
+    "name": "admin_update_user",
+    "version": "1.0.0",
+    "main": "index.js",
+    "dependencies": {
+        "@cloudbase/manager-node": "^3.7.0"
+    }
+}
