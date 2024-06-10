@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@cloudbase/manager-node": "^4.2.9",
-    "@cloudbase/node-sdk": "^2.11.0"
+    "@cloudbase/node-sdk": "^2.11.0",
+    "mysql2": "^3.10.0"
   }
 }
