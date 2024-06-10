@@ -1,13 +1,18 @@
-const tcb = require("@cloudbase/node-sdk");
-const app = tcb.init({
-    'env': process.env.ENV_ID
-});
-const db = app.database();
+const dbConfig = require("./db.config");
+const mysql = require('mysql2/promise').createPool(dbConfig);
 
 exports.main = async (event, context) => {
-    const db_res = await db.collection("unit")
-        .add({
-            "unit_name": event.unit_name
-        });
-    return db_res;
+    const unit_name = event.unit_name;
+    const sql = `INSERT INTO
+    unit (create_time, unit_name)
+VALUES
+    (NOW(), '${unit_name}');`
+    try {
+        const [results] = await mysql.query(sql);
+        return results.insertId;
+    }
+    catch (err) {
+        console.log(err);
+        return -1;
+    }
 }

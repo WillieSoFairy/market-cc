@@ -1,6 +1,6 @@
 {
-    "name": "add_good",
-    "version": "2.0.0",
+    "name": "add_order",
+    "version": "1.0.0",
     "main": "index.js",
     "dependencies": {
         "@cloudbase/node-sdk": "^3.0.0",
