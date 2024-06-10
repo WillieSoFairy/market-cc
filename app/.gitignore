@@ -54,3 +54,4 @@ node_modules/
 .env
 
 *tcb_custom_login_key.json
+*db.config.js
