@@ -3,7 +3,12 @@ const mysql = require('mysql2/promise').createPool(dbConfig);
 
 exports.main = async (event, context) => {
     const order_date = new Date(event.order_date).toISOString().slice(0, 10);
-    const sql = `select * from order_view where order_date='${order_date}';`
-    const [results] = await mysql.query(sql);
-    return results;
+    const ent_name = event.ent_name;
+    try {
+        const sql = `SELECT id,ent_name,dept_name,good_name,count,unit_name,order_date from order_view where order_date='${order_date}' and ent_name='${ent_name}';`;
+        const [results] = await mysql.query(sql);
+        return results;
+    } catch {
+        return null;
+    }
 }   
