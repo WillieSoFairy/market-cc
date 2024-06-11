@@ -18,6 +18,9 @@
                             <a-tag color="purple">我</a-tag>
                         </span>
                     </template>
+                    <template v-if="column.dataIndex === 'create_date'">
+                        {{ dayjs(record.create_date).format("YYYY/MM/DD HH:mm:ss") }}
+                    </template>
                     <template v-if="column.dataIndex === 'auth'">
                         <span>
                             <a-tag :color="record.enable === false ? 'gray' : (record.auth === 0 ? 'orange' : 'blue')">
@@ -26,13 +29,13 @@
                         </span>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <a-button type="link" @click="showModifyUserModal(record)">修改</a-button>
+                        <a-typography-link @click="showModifyUserModal(record)">修改</a-typography-link>
                         <span v-if="user_id !== record._id">
                             <a-divider type="vertical" />
                             <a-popconfirm :title="'删除用户 ' + record.user_name + ' ？'" cancel-text="取消">
                                 <template #okButton><a-button type="primary" danger size="small"
                                         @click="delUser(record)" :loading="deleting">删除</a-button></template>
-                                <a-button type="link" danger>删除</a-button>
+                                <a-typography-link type="danger">删除</a-typography-link>
                             </a-popconfirm>
                         </span>
                     </template>
@@ -49,6 +52,7 @@
 <script setup>
 import { tcb, auth } from '../tcb/index.js';
 import { onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
 import AdminModifyUser from '../components/AdminModifyUser.vue';
 
 const users_list = ref(null);
