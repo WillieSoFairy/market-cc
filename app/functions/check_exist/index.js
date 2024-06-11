@@ -1,18 +1,15 @@
-const dbConfig = require("./db.config");
-const mysql = require('mysql2/promise').createPool(dbConfig);
+const tcb = require("@cloudbase/node-sdk");
+const app = tcb.init({
+    'env': process.env.ENV_ID
+});
+const db = app.database();
+const _ = db.command;
 
 exports.main = async (event, context) => {
-    const table = event.table;
-    const field = event.field;
-    const data = event.data;
-    const sql = `select id from ${table} WHERE ${field}='${data}';`;
-    try {
-        const [results, field] = await mysql.query(sql);
-        console.log(field);
-        return results;
-    }
-    catch (err) {
-        console.log(err);
-        return -1;
-    }
+    const db_res = await db.collection(event.db)
+        .where({
+            [event.field]: _.eq(event.data)
+        })
+        .get();
+    return db_res.data;
 }
