@@ -1,11 +1,12 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import main from '../Pages/main.vue'
-import FormTable from '../Pages/FormTable.vue'
-import Login from '../Pages/Login.vue'
-import SuperAdmin from '../Pages/SuperAdmin.vue'
-import AdminUsers from '../Pages/AdminUsers.vue'
-import AdminHome from '../Pages/AdminHome.vue'
-import { auth } from '../tcb/index.js'
+import { createRouter, createWebHashHistory } from 'vue-router';
+import main from '../Pages/main.vue';
+import FormTable from '../Pages/FormTable.vue';
+import Login from '../Pages/Login.vue';
+import SuperAdmin from '../Pages/SuperAdmin.vue';
+import AdminUsers from '../Pages/AdminUsers.vue';
+import AdminHome from '../Pages/AdminHome.vue';
+import Account from '../Pages/Account.vue';
+import { auth } from '../tcb/index.js';
 
 
 const routes = [
@@ -24,6 +25,7 @@ const routes = [
                     { path: 'users', component: AdminUsers }
                 ]
             },
+            { path: 'account', component: Account }
         ]
     }
 ]
