@@ -25,7 +25,7 @@
                 </span>
                 <span v-else>
                     <a-typography-link type="success" v-if="record.id === null"
-                        @click="handleAdd(record.key)">保存</a-typography-link>
+                        @click="handleInsert(record.key)">保存</a-typography-link>
                     <a-typography-link type="success" v-else @click="handleUpdate(record.key)">保存</a-typography-link>
                     <a-divider type="vertical" />
                     <a-typography-link @click="handleCancel(record.key)">取消</a-typography-link>
@@ -71,7 +71,7 @@ const columns = [
 
 const uploadData = ref(resetInput());
 
-async function handleAdd(key) {
+async function handleInsert(key) {
     const keyItem = { ...orderData.value[key] };
     uploadData.value.ent_name = keyItem.ent_name;
     uploadData.value.user_id = keyItem.user_id;
@@ -97,7 +97,7 @@ async function handleUpdate(key) {
     const { customUserId } = await auth.getCurrenUser();
     const updateRow = orderData.value[key];
     const updateData = {
-        "order_id": updateRow.id,
+        "id": updateRow.id,
         "dept_name": uploadData.value.dept_name,
         "good_name": uploadData.value.good_name,
         "unit_name": uploadData.value.unit_name,
