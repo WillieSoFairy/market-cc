@@ -1,7 +1,17 @@
 <template>
   <a-layout>
-    <a-layout-header>Header
-      <a-button type="primary" @click="logout">登出</a-button>
+    <a-layout-header>
+      <a-dropdown>
+        <a-avatar size="large" style="color: #f56a00; background-color: #fde3cf">
+          {{ avatarFill }}
+        </a-avatar>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item><router-link to="/account">账户设置</router-link></a-menu-item>
+            <a-menu-item danger @click="logout">退出</a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
     </a-layout-header>
     <a-layout>
       <a-layout-sider width="220" style="background-color: #fff">
@@ -20,13 +30,18 @@
 import { onMounted, ref } from 'vue';
 import { auth } from '../tcb/index.js';
 import { useRouter } from 'vue-router';
+import { get_account_info } from "../components/UserAccount.js";
 
 const router = useRouter();
+const accInfo = ref(null);
 const alia = ref(null);
+const avatarFill = ref(null);
 
 onMounted(async () => {
-  const user = await auth.getCurrenUser();
-  alia.value = user.customUserId;
+  const { customUserId } = await auth.getCurrenUser();
+  accInfo.value = await get_account_info(customUserId);
+  alia.value = accInfo.value.alia;
+  avatarFill.value = alia.value[0].toUpperCase();
 });
 
 async function logout() {
