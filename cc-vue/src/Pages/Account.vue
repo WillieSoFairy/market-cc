@@ -8,8 +8,7 @@
                             <span>
                                 <a-typography-text strong style="font-size: 1.5em;" v-if="!aliaEditing">
                                     {{ accInfo.alia }}</a-typography-text>
-                                <a-input v-else style="width: 10em;" placeholder="输入新的名称"
-                                    v-model:value="accInfo.alia" />
+                                <a-input v-else style="width: 10em;" placeholder="输入新的名称" v-model:value="newAlia" />
                             </span>
                             <a-divider type="vertical" />
                             <span v-if="!aliaEditing">
@@ -19,7 +18,7 @@
                             </span>
                             <span v-else>
                                 <a>
-                                    <CheckCircleOutlined style="color:#52c41a" />
+                                    <CheckCircleOutlined @click="handleUpdateAlia" style="color:#52c41a" />
                                 </a>
                                 <a-divider type="vertical" />
                                 <a>
@@ -62,7 +61,7 @@
 
 <script setup>
 import { auth } from '../tcb/index.js';
-import { get_account_info } from "../components/UserAccount.js";
+import { get_account_info, update_info } from "../components/UserAccount.js";
 import { onMounted, ref } from 'vue';
 import { EditOutlined, KeyOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 import dayjs from 'dayjs';
@@ -97,20 +96,37 @@ const cardLoading = ref(false);
 onMounted(async () => {
     cardLoading.value = true;
     const { customUserId } = await auth.getCurrenUser();
-    accInfo.value = await get_account_info(customUserId);
-    avatarFill.value = (accInfo.value.alia)[0].toUpperCase();
-    accCard.value[0].desc = accInfo.value.auth === 0 ? "管理员" : "普通用户";
-    accCard.value[1].desc = dayjs(accInfo.value.create_date).format('YYYY/MM/DD HH:mm:ss');
-    accCard.value[2].desc = dayjs(accInfo.value.last_login).format('YYYY/MM/DD HH:mm:ss');
+    await load_cardInfo(customUserId);
     cardLoading.value = false;
 });
 
 const aliaEditing = ref(false);
+const newAlia = ref(accInfo.value.alia);
 function handleEditAlia() {
+    newAlia.value = accInfo.value.alia;
     aliaEditing.value = true;
 }
 function handleCancelAlia() {
     aliaEditing.value = false;
+    newAlia.value = accInfo.value.alia;
+}
+
+async function handleUpdateAlia() {
+    cardLoading.value = true
+    const { customUserId } = await auth.getCurrenUser();
+    const result = await update_info(customUserId, newAlia.value);
+    await load_cardInfo(customUserId);
+    aliaEditing.value = false;
+    cardLoading.value = false;
+    console.log(result);
+}
+
+async function load_cardInfo(user_id) {
+    accInfo.value = await get_account_info(user_id);
+    avatarFill.value = (accInfo.value.alia)[0].toUpperCase();
+    accCard.value[0].desc = accInfo.value.auth === 0 ? "管理员" : "普通用户";
+    accCard.value[1].desc = dayjs(accInfo.value.create_date).format('YYYY/MM/DD HH:mm:ss');
+    accCard.value[2].desc = dayjs(accInfo.value.last_login).format('YYYY/MM/DD HH:mm:ss');
 }
 
 </script>

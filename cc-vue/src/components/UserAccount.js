@@ -11,4 +11,18 @@ async function get_account_info(user_id) {
     return result;
 }
 
-export { get_account_info };
+async function update_info(user_id, new_alia) {
+    let result = null;
+    await tcb.callFunction({
+        name: 'update_account_info',
+        data: {
+            "user_id": user_id,
+            "new_alia": new_alia
+        }
+    }).then((res) => {
+        result = res.result;
+    });
+    return result;
+}
+
+export { get_account_info, update_info };
