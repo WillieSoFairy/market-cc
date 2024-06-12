@@ -21,7 +21,7 @@ exports.main = async (event, context) => {
 
     const count = event.count;
     const user_id = event.user_id;
-    const order_date = new Date(event.order_date).toISOString().slice(0, 10);
+    const order_date = event.order_date;
 
     const sql = `INSERT INTO
 order_details (create_time,ent_id,dept_id,good_id,unit_id,count,user_id,order_date)
