@@ -10,6 +10,7 @@
     "test:unit": "vitest"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@cloudbase/js-sdk": "^1.7.2",
     "ant-design-vue": "^4.1.2",
     "pinia": "^2.1.7",
