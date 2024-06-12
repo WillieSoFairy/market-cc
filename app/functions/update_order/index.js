@@ -31,7 +31,7 @@ WHERE id=${order_id};`;
 
     try {
         const [results] = await mysql.query(sql);
-        return results.Changed;
+        return results.affectedRows;
     }
     catch (err) {
         console.log(err);
