@@ -1,11 +1,12 @@
 import { tcb } from '../tcb/index.js';
+import dayjs from 'dayjs';
 
 async function get_orderData(order_date, ent_name) {
     let result = null;
     await tcb.callFunction({
         name: 'query_order',
         data: {
-            "order_date": order_date.format('YYYY-MM-DD'),
+            "order_date": dayjs(order_date).format('YYYY-MM-DD'),
             "ent_name": ent_name
         }
     }).then((res) => {
@@ -25,7 +26,6 @@ async function add_orderData(uploadData) {
         "user_id": uploadData.user_id,
         "order_date": uploadData.order_date.format('YYYY-MM-DD')
     }
-    console.log(upload)
     await tcb.callFunction({
         name: "add_order",
         data: upload
