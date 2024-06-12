@@ -63,6 +63,7 @@
 import { auth } from '../tcb/index.js';
 import { get_account_info, update_info } from "../components/UserAccount.js";
 import { onMounted, ref } from 'vue';
+import { message } from 'ant-design-vue';
 import { EditOutlined, KeyOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 import dayjs from 'dayjs';
 
@@ -112,13 +113,19 @@ function handleCancelAlia() {
 }
 
 async function handleUpdateAlia() {
+    if (newAlia.value === accInfo.value.alia) {
+        aliaEditing.value = false;
+        return;
+    }
     cardLoading.value = true
     const { customUserId } = await auth.getCurrenUser();
     const result = await update_info(customUserId, newAlia.value);
     await load_cardInfo(customUserId);
     aliaEditing.value = false;
     cardLoading.value = false;
-    console.log(result);
+    if (result) {
+        message.success("名称修改成功");
+    }
 }
 
 async function load_cardInfo(user_id) {
