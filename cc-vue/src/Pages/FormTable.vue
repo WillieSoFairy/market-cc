@@ -12,7 +12,7 @@
                         @search="getOrderData" :loading="search_loading" /></a-form-item>
             </a-form>
             <a-button type="primary" @click="handleAddItem">新增项目</a-button>
-            <DataTable v-model="orderData" />
+            <DataTable v-model="orderData" :loading="search_loading" />
         </a-col>
     </a-row>
     <a-row style="margin-top: 30px;">

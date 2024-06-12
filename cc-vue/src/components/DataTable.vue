@@ -1,5 +1,5 @@
 <template>
-    <a-table :columns="columns" :data-source="orderData" bordered :pagination="false">
+    <a-table :columns="columns" :data-source="orderData" bordered :pagination="false" :loading="props.loading">
         <template #bodyCell="{ column, text, record }">
             <template v-if="column.dataIndex === 'good_name'">
                 <template v-if="record.editable === false">{{ text }}</template>
@@ -40,6 +40,7 @@ import { auth } from '../tcb/index.js';
 import { get_orderData, add_orderData, del_orderData, update_orderData } from '../components/FormQueryOrder';
 import { Modal, message } from 'ant-design-vue';
 
+const props = defineProps(['loading'])
 const orderData = defineModel();
 const columns = [
     {
