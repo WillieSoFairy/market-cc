@@ -21,7 +21,7 @@
                 <span v-if="record.editable === false">
                     <a-typography-link @click="handleEdit(record.key)">修改</a-typography-link>
                     <a-divider type="vertical" />
-                    <a-typography-link type="danger">删除</a-typography-link>
+                    <a-typography-link type="danger" @click="showDeleteConfirm(record.id)">删除</a-typography-link>
                 </span>
                 <span v-else>
                     <a-typography-link type="success" v-if="record.id === null"
@@ -35,9 +35,9 @@
     </a-table>
 </template>
 <script setup>
-import { cloneDeep } from 'lodash-es';
 import { ref } from 'vue';
-import { get_orderData, add_orderData } from '../components/FormQueryOrder';
+import { get_orderData, add_orderData, del_orderData } from '../components/FormQueryOrder';
+import { Modal, message } from 'ant-design-vue';
 
 const orderData = defineModel();
 const columns = [
@@ -101,6 +101,37 @@ function handleEdit(key) {
         "count": keyItem.count,
     };
     orderData.value[key].editable = true;
+}
+
+const deleting = ref(false);
+async function handleDel(order_id) {
+    deleting.value = true;
+    const keyItem = { ...orderData.value[0] };
+    const result = await del_orderData(order_id);
+    if (result) {
+        message.success("删除成功");
+    }
+    else {
+        message.error("删除失败");
+    }
+    orderData.value = await get_orderData(keyItem.order_date, keyItem.ent_name);
+    deleting.value = false;
+}
+
+function showDeleteConfirm(id) {
+    Modal.confirm({
+        title: '确认删除这一项？',
+        content: 'Some descriptions',
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+            handleDel(id);
+        },
+        onCancel() {
+            console.log('Cancel');
+        },
+    });
 }
 
 function resetInput() {
