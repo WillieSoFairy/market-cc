@@ -10,7 +10,7 @@
             <a-input v-model:value="userInfo.pwd" />
         </a-form-item>
         <a-form-item label="激活">
-            <a-switch v-model:checked="userInfo.enable" :disabled="currentUser === userInfo._id"/>
+            <a-switch v-model:checked="userInfo.enable" :disabled="currentUser === userInfo._id" />
         </a-form-item>
         <a-form-item label="用户权限">
             <a-radio-group v-model:value="userInfo.auth" button-style="solid" :disabled="currentUser === userInfo._id">
@@ -80,6 +80,7 @@ async function submitUpdate() {
         "describe": userInfo.value.describe,
         "create_date": props.userInfo.create_date,
         "last_login": props.userInfo.last_login,
+        "alia": props.userInfo.alia,
         "visible": true
     }
     await tcb.callFunction({
