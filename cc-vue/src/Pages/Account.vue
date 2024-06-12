@@ -48,7 +48,7 @@
                     </template>
                 </a-list>
                 <template #actions>
-                    <a-typography-link target="_blank">
+                    <a-typography-link @click="handleModifyPwd">
                         <KeyOutlined style="font-size: 1em;" />
                         <span>修改密码</span>
                     </a-typography-link>
@@ -56,7 +56,9 @@
             </a-card>
         </a-col>
     </a-row>
-
+    <a-modal v-model:open="openModal" title="修改密码" :destroyOnClose="true" :footer="null">
+        <UserModifyPwd v-model="openModal" :user-id="accInfo._id" />
+    </a-modal>
 </template>
 
 <script setup>
@@ -65,6 +67,7 @@ import { get_account_info, update_info } from "../components/UserAccount.js";
 import { onMounted, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { EditOutlined, KeyOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
+import UserModifyPwd from '../components/UserModifyPwd.vue'
 import dayjs from 'dayjs';
 
 const acc = {
@@ -136,4 +139,8 @@ async function load_cardInfo(user_id) {
     accCard.value[2].desc = dayjs(accInfo.value.last_login).format('YYYY/MM/DD HH:mm:ss');
 }
 
+const openModal = ref(false);
+function handleModifyPwd() {
+    openModal.value = true;
+}
 </script>
