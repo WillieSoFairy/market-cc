@@ -25,7 +25,8 @@ exports.main = async (event, context) => {
         "pwd": event.userInfo.pwd,
         "create_date": event.userInfo.create_date,
         "last_login": event.userInfo.last_login,
-        "visible": event.userInfo.visible
+        "visible": event.userInfo.visible,
+        "alia": event.userInfo.alia
     }
     console.log(user_info)
     const { ModifiedNum } = await app.commonService('flexdb').call({

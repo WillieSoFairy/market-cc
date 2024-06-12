@@ -23,6 +23,7 @@ exports.main = async (event, context) => {
         "enable": event.userInfo.enable,
         "auth": event.userInfo.auth,
         "describe": event.userInfo.describe,
+        "alia": event.userInfo.user_name,
         "create_date": now,
         "last_login": null,
         "visible": true
