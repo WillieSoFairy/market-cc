@@ -36,4 +36,15 @@ async function del_orderData(order_id) {
     return status;
 }
 
-export { get_orderData, add_orderData, del_orderData };
+async function update_orderData(updateData) {
+    let status = null;
+    await tcb.callFunction({
+        name: "update_order",
+        data: updateData
+    }).then((res) => {
+        status = res.result;
+    });
+    return status;
+}
+
+export { get_orderData, add_orderData, del_orderData, update_orderData };
