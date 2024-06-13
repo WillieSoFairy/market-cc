@@ -7,7 +7,7 @@
             <a-input v-model:value="userInfo.user_name" />
         </a-form-item>
         <a-form-item label="密码">
-            <a-input v-model:value="userInfo.pwd" />
+            <a-input-password v-model:value="userInfo.pwd" />
         </a-form-item>
         <a-form-item label="激活">
             <a-switch v-model:checked="userInfo.enable" :disabled="currentUser === userInfo._id" />
@@ -32,6 +32,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { tcb, auth } from '../tcb/index.js';
+import { message } from 'ant-design-vue';
 
 const props = defineProps({
     userInfo: Object,
@@ -92,7 +93,8 @@ async function submitUpdate() {
         }
     }).then((res) => {
         console.log(res);
-    })
+    });
+    message.success('更新成功', 1.5);
 }
 
 async function submitAdd() {
@@ -111,7 +113,8 @@ async function submitAdd() {
         }
     }).then((res) => {
         console.log(res);
-    })
+    });
+    message.success('添加成功', 1.5);
 }
 
 const button_loading = ref(false);
