@@ -1,5 +1,11 @@
 <template>
     <a-row>
+        <a-col :span="24">
+            <a-typography-title :level="2">账户设置</a-typography-title>
+            <a-divider />
+        </a-col>
+    </a-row>
+    <a-row>
         <a-col :span="12">
             <a-card :bordered="false" style="width: 500px" :loading="cardLoading">
                 <a-card-meta :description="'@' + accInfo.user_name">

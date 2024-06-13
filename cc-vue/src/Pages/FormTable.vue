@@ -1,4 +1,10 @@
 <template>
+    <a-row>
+        <a-col :span="24">
+            <a-typography-title :level="2">订单录入</a-typography-title>
+            <a-divider />
+        </a-col>
+    </a-row>
     <a-row><a-form><a-form-item label="选择日期"><a-date-picker v-model:value="order_date" format="YYYY/MM/DD"
                     @change="getOrderData" /></a-form-item></a-form></a-row>
     <a-row>
@@ -11,8 +17,10 @@
                 <a-form-item label="单位名称" style="width: 30em;"><a-input-search v-model:value="ent_name" enter-button
                         @search="getOrderData" :loading="search_loading" /></a-form-item>
             </a-form>
-            <a-button type="primary" @click="handleAddItem">新增项目</a-button>
-            <DataTable v-model="orderData" :loading="search_loading" />
+            <a-space direction="vertical" style="width: 100%;" size="large">
+                <a-button type="primary" @click="handleAddItem">新增项目</a-button>
+                <DataTable v-model="orderData" :loading="search_loading" />
+            </a-space>
         </a-col>
     </a-row>
     <a-row style="margin-top: 30px;">

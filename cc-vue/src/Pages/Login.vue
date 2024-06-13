@@ -8,19 +8,17 @@
         <a-col :span="6" :offset="6">
             <a-form :model="formState" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }"
                 autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
-                <a-form-item label="用户名" name="username"
-                    :rules="[{ required: true, message: 'Please input your username!' }]">
+                <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入用户名' }]">
                     <a-input v-model:value="formState.username" />
                 </a-form-item>
 
-                <a-form-item label="密码" name="password"
-                    :rules="[{ required: true, message: 'Please input your password!' }]">
+                <a-form-item label="密码" name="password" :rules="[{ required: true, message: '请输入密码' }]">
                     <a-input-password v-model:value="formState.password" />
                 </a-form-item>
 
-                <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
+                <!-- <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
                     <a-checkbox v-model:checked="formState.remember">下次自动登入</a-checkbox>
-                </a-form-item>
+                </a-form-item> -->
 
                 <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
                     <a-button type="primary" html-type="submit" @click="login">登入</a-button>
@@ -34,6 +32,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { tcb, auth } from '../tcb/index.js'
+import { message } from 'ant-design-vue';
 
 const formState = ref({
     username: '',
@@ -44,10 +43,10 @@ const formState = ref({
 const router = useRouter();
 
 async function login() {
-    console.log(formState.value.username)
-    console.log(formState.value.password)
+    if (formState.value.username === '' || formState.value.password === '') {
+        return;
+    }
     const loginState = await auth.getLoginState();
-    console.log(loginState)
     let loginRes;
     if (!loginState) {
         await tcb.callFunction({
@@ -56,14 +55,13 @@ async function login() {
         }).then((res) => {
             loginRes = res.result;
         });
-        console.log(loginRes);
         if (loginRes.ticket !== '') {
             await auth.customAuthProvider().signIn(loginRes.ticket);
-            console.log('Success');
+            message.success("登入成功");
             router.push('/');
         }
         else {
-            console.log('Wrong');
+            message.error("用户名或密码错误")
         }
     }
     else {
