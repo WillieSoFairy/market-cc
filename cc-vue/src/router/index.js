@@ -6,6 +6,7 @@ import SuperAdmin from '../Pages/SuperAdmin.vue';
 import AdminUsers from '../Pages/AdminUsers.vue';
 import AdminHome from '../Pages/AdminHome.vue';
 import Account from '../Pages/Account.vue';
+import HomePage from '../Pages/HomePage.vue'
 import { auth } from '../tcb/index.js';
 
 
@@ -13,16 +14,16 @@ const routes = [
     { path: '/login', component: Login, name: 'Login' },
     {
         path: '/',
-        alia: '/home',
         component: main,
         children: [
+            { path: '', component: HomePage },
             { path: 'form', component: FormTable },
             {
                 path: 'admin',
                 component: SuperAdmin,
                 children: [
                     { path: '', component: AdminHome },
-                    { path: 'users', component: AdminUsers }
+                    { path: 'users', component: AdminUsers, name: 'adminUsers' }
                 ]
             },
             { path: 'account', component: Account }
