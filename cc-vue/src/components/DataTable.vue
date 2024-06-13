@@ -73,6 +73,7 @@ const columns = [
 const uploadData = ref(resetInput());
 
 async function handleInsert(key) {
+    const hide = message.loading('更新中...', 0);
     const keyItem = { ...orderData.value[key] };
     uploadData.value.ent_name = keyItem.ent_name;
     uploadData.value.user_id = keyItem.user_id;
@@ -80,6 +81,8 @@ async function handleInsert(key) {
 
     await add_orderData(uploadData.value);
     orderData.value = await get_orderData(keyItem.order_date, keyItem.ent_name);
+    hide();
+    message.success('添加成功', 1.5);
 
     uploadData.value = resetInput();
 }
@@ -95,6 +98,7 @@ function handleCancel(key) {
 }
 
 async function handleUpdate(key) {
+    const hide = message.loading('更新中...', 0);
     const { customUserId } = await auth.getCurrenUser();
     const updateRow = orderData.value[key];
     const updateData = {
@@ -108,6 +112,9 @@ async function handleUpdate(key) {
     const status = await update_orderData(updateData);
     updateRow.editable = false;
     orderData.value = await get_orderData(updateRow.order_date, updateRow.ent_name);
+    hide();
+    if (status === 1) { message.success('更新成功', 1.5); }
+    else { message.error('更新失败', 1.5); }
 }
 
 function handleEdit(key) {
@@ -126,12 +133,8 @@ async function handleDel(order_id) {
     deleting.value = true;
     const keyItem = { ...orderData.value[0] };
     const result = await del_orderData(order_id);
-    if (result) {
-        message.success("删除成功");
-    }
-    else {
-        message.error("删除失败");
-    }
+    if (result) { message.success("删除成功"); }
+    else { message.error("删除失败"); }
     orderData.value = await get_orderData(keyItem.order_date, keyItem.ent_name);
     deleting.value = false;
 }
@@ -139,7 +142,6 @@ async function handleDel(order_id) {
 function showDeleteConfirm(id) {
     Modal.confirm({
         title: '确认删除这一项？',
-        content: 'Some descriptions',
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
