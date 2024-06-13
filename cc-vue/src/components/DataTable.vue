@@ -105,11 +105,9 @@ async function handleUpdate(key) {
         "count": uploadData.value.count,
         "user_id": customUserId
     }
-    console.log(updateData);
     const status = await update_orderData(updateData);
     updateRow.editable = false;
     orderData.value = await get_orderData(updateRow.order_date, updateRow.ent_name);
-    console.log(status);
 }
 
 function handleEdit(key) {
