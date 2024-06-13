@@ -1,49 +1,52 @@
 <template>
     <a-row>
         <a-col :span="24">
-            <h1>用户管理</h1>
+            <a-typography-title :level="2">用户管理</a-typography-title>
+            <a-divider />
         </a-col>
     </a-row>
-    <a-row>
-        <a-col :span="24"><a-button type="primary" @click="showNewUserModal">新增用户</a-button></a-col>
-    </a-row>
-    <a-row>
-        <a-col :span="24">
-            <a-table :columns="columns" :data-source="users_list">
-                <template #bodyCell="{ column, record }">
-                    <template v-if="column.dataIndex === 'user_name'">
-                        {{ record.user_name }}
-                        <span v-if="user_id === record._id">
-                            <a-divider type="vertical" />
-                            <a-tag color="purple">我</a-tag>
-                        </span>
+    <a-space direction="vertical" style="width: 100%;" size="large">
+        <a-row>
+            <a-col :span="24"><a-button type="primary" @click="showNewUserModal">新增用户</a-button></a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="24">
+                <a-table :columns="columns" :data-source="users_list" :loading="loading" :pagination="false">
+                    <template #bodyCell="{ column, record }">
+                        <template v-if="column.dataIndex === 'user_name'">
+                            {{ record.user_name }}
+                            <span v-if="user_id === record._id">
+                                <a-divider type="vertical" />
+                                <a-tag color="purple">我</a-tag>
+                            </span>
+                        </template>
+                        <template v-if="column.dataIndex === 'create_date'">
+                            {{ dayjs(record.create_date).format("YYYY/MM/DD HH:mm:ss") }}
+                        </template>
+                        <template v-if="column.dataIndex === 'auth'">
+                            <span>
+                                <a-tag
+                                    :color="record.enable === false ? 'gray' : (record.auth === 0 ? 'orange' : 'blue')">
+                                    {{ record.auth === 0 ? "管理员" : "普通用户" }}
+                                </a-tag>
+                            </span>
+                        </template>
+                        <template v-if="column.key === 'action'">
+                            <a-typography-link @click="showModifyUserModal(record)">修改</a-typography-link>
+                            <span v-if="user_id !== record._id">
+                                <a-divider type="vertical" />
+                                <a-popconfirm :title="'删除用户 ' + record.user_name + ' ？'" cancel-text="取消">
+                                    <template #okButton><a-button type="primary" danger size="small"
+                                            @click="delUser(record)" :loading="deleting">删除</a-button></template>
+                                    <a-typography-link type="danger">删除</a-typography-link>
+                                </a-popconfirm>
+                            </span>
+                        </template>
                     </template>
-                    <template v-if="column.dataIndex === 'create_date'">
-                        {{ dayjs(record.create_date).format("YYYY/MM/DD HH:mm:ss") }}
-                    </template>
-                    <template v-if="column.dataIndex === 'auth'">
-                        <span>
-                            <a-tag :color="record.enable === false ? 'gray' : (record.auth === 0 ? 'orange' : 'blue')">
-                                {{ record.auth === 0 ? "管理员" : "普通用户" }}
-                            </a-tag>
-                        </span>
-                    </template>
-                    <template v-if="column.key === 'action'">
-                        <a-typography-link @click="showModifyUserModal(record)">修改</a-typography-link>
-                        <span v-if="user_id !== record._id">
-                            <a-divider type="vertical" />
-                            <a-popconfirm :title="'删除用户 ' + record.user_name + ' ？'" cancel-text="取消">
-                                <template #okButton><a-button type="primary" danger size="small"
-                                        @click="delUser(record)" :loading="deleting">删除</a-button></template>
-                                <a-typography-link type="danger">删除</a-typography-link>
-                            </a-popconfirm>
-                        </span>
-                    </template>
-                </template>
-            </a-table>
-        </a-col>
-    </a-row>
-
+                </a-table>
+            </a-col>
+        </a-row>
+    </a-space>
     <a-modal v-model:open="openModal" :title="(addNewUser ? '新增' : '修改') + '用户'" :destroyOnClose="true" :footer="null">
         <admin-modify-user v-model="openModal" :user-info="userInfo" :is-new-user="addNewUser"
             @modified="get_users_list" />
@@ -58,7 +61,9 @@ import AdminModifyUser from '../components/AdminModifyUser.vue';
 const users_list = ref(null);
 const user_id = ref(null)
 
+const loading = ref(false);
 async function get_users_list() {
+    loading.value = true;
     const auth_current = await auth.getCurrenUser();
     user_id.value = auth_current.customUserId;
     await tcb.callFunction({
@@ -67,7 +72,7 @@ async function get_users_list() {
     }).then((res) => {
         users_list.value = res.result.data.map((x) => { return JSON.parse(x); });
     });
-    console.log(users_list.value)
+    loading.value = false;
 }
 onMounted(async () => {
     await get_users_list();
