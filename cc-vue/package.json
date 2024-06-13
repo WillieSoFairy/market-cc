@@ -1,0 +1,27 @@
+{
+  "name": "cc-vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@cloudbase/js-sdk": "^1.7.2",
+    "ant-design-vue": "^4.1.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.15",
+    "vue-router": "^4.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.3",
+    "@vue/test-utils": "^2.4.4",
+    "jsdom": "^24.0.0",
+    "vite": "^5.0.11",
+    "vitest": "^1.2.2"
+  }
+}
