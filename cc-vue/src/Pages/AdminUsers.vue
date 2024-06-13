@@ -57,6 +57,7 @@ import { tcb, auth } from '../tcb/index.js';
 import { onMounted, ref } from 'vue';
 import dayjs from 'dayjs';
 import AdminModifyUser from '../components/AdminModifyUser.vue';
+import { message } from 'ant-design-vue';
 
 const users_list = ref(null);
 const user_id = ref(null)
@@ -82,7 +83,8 @@ const columns = [
     {
         title: '用户名',
         dataIndex: 'user_name',
-        key: 'user_name'
+        key: 'user_name',
+        width:'15em'
     },
     // {
     //     title: '昵称',
@@ -90,15 +92,18 @@ const columns = [
     // },
     {
         title: '创建时间',
-        dataIndex: 'create_date'
+        dataIndex: 'create_date',
+        width:'15em'
     },
     {
         title: '用户权限',
-        dataIndex: 'auth'
+        dataIndex: 'auth',
+        width:'10em'
     },
     {
         title: '操作',
-        key: 'action'
+        key: 'action',
+        width:'15em'
     },
     {
         title: '描述',
@@ -148,6 +153,7 @@ async function delUser(rec) {
         get_users_list();
     })
     deleting.value = false;
+    message.success("已删除",1.5);
 }
 
 </script>
