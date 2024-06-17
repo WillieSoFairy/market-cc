@@ -26,8 +26,11 @@ exports.main = async (event, context) => {
     if (data.length !== 0) {
         code = 0;
         const customUserID = data[0]._id;
-        console.log(customUserID)
         ticket = app.auth().createTicket(customUserID);
+
+        await db.collection("users")
+            .where({ _id: customUserID })
+            .update({ last_login: new db.serverDate() });
     }
 
     return {
