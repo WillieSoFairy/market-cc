@@ -5,21 +5,37 @@
             <a-divider />
         </a-col>
     </a-row>
-    <a-row><a-form><a-form-item label="选择日期"><a-date-picker v-model:value="order_date" format="YYYY/MM/DD"
-                    @change="getOrderData" /></a-form-item></a-form></a-row>
+    <a-row>
+        <a-col :span="6">
+            <a-form><a-form-item label="选择日期"><a-date-picker v-model:value="order_date" format="YYYY/MM/DD"
+                        @change="getOrderData" /></a-form-item></a-form></a-col>
+    </a-row>
     <a-row>
         <h1>1/5</h1>
     </a-row>
     <a-row>
         <a-col :span="10"><a-image :src=testImg width="32vw" /></a-col>
         <a-col :span="14">
-            <a-form>
-                <a-form-item label="单位名称" style="width: 30em;"><a-input-search v-model:value="ent_name" enter-button
-                        @search="getOrderData" :loading="search_loading" /></a-form-item>
-            </a-form>
-            <a-space direction="vertical" style="width: 100%;" size="large">
-                <a-button type="primary" @click="handleAddItem">新增项目</a-button>
-                <DataTable v-model="orderData" :loading="search_loading" />
+            <a-row>
+                <a-form>
+                    <a-form-item label="单位名称" style="width: 30em;"><a-input-search v-model:value="ent_name" enter-button
+                            @search="getOrderData" :loading="search_loading" /></a-form-item>
+                </a-form>
+            </a-row>
+            <a-space direction="vertical" style="width: 100%;">
+                <a-row>
+                    <a-col :span="10">
+                        <a-button type="primary" @click="handleAddItem" v-if="!isEditing"
+                            :disabled="addDisabled">新增项目</a-button>
+                        <State2Struct v-model="LLMData" v-else />
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="24">
+                        <DataTable v-model:order-data="orderData" v-model:upload-data="LLMData"
+                            :loading="search_loading" />
+                    </a-col>
+                </a-row>
             </a-space>
         </a-col>
     </a-row>
@@ -33,17 +49,20 @@
     </a-row>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import dayjs from 'dayjs';
 import DataTable from '../components/DataTable.vue';
 import { auth } from '../tcb/index.js';
 import testImg from '../images/1.jpg';
 import { get_orderData } from '../components/FormQueryOrder';
+import State2Struct from '../components/State2Struct.vue';
+
 
 const now = dayjs(new Date());
 const orderData = ref(null);
 const order_date = ref(now);
-const ent_name = ref(null)
+const ent_name = ref(null);
+const LLMData = ref(null);
 
 async function handleAddItem() {
     let newKey = null;
@@ -71,4 +90,27 @@ async function getOrderData() {
     orderData.value = await get_orderData(order_date.value, ent_name.value);
     search_loading.value = false;
 }
+
+const isEditing = computed(() => {
+    if (orderData.value === null || orderData.value.length === 0) {
+        return false;
+    }
+    else {
+        for (let x of orderData.value) {
+            if (x.editable === true) {
+                LLMData.value.dept_name = x.dept_name;
+                LLMData.value.good_name = x.good_name;
+                LLMData.value.count = x.count;
+                LLMData.value.unit_name = x.unit_name;
+                return true;
+            }
+        }
+        return false;
+    }
+});
+
+const addDisabled = computed(() => {
+    if (orderData.value === null) { return true; }
+    else { return false; }
+})
 </script>

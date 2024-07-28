@@ -7,7 +7,7 @@
             </template>
             <template v-if="column.dataIndex === 'count'">
                 <template v-if="record.editable === false">{{ text }}</template>
-                <a-input v-else v-model:value="uploadData.count" />
+                <a-input-number v-else v-model:value="uploadData.count" />
             </template>
             <template v-if="column.dataIndex === 'unit_name'">
                 <template v-if="record.editable === false">{{ text }}</template>
@@ -41,7 +41,7 @@ import { get_orderData, add_orderData, del_orderData, update_orderData } from '.
 import { Modal, message } from 'ant-design-vue';
 
 const props = defineProps(['loading'])
-const orderData = defineModel();
+const orderData = defineModel('orderData');
 const columns = [
     {
         title: '名称',
@@ -51,7 +51,7 @@ const columns = [
     {
         title: '数量',
         dataIndex: 'count',
-        width: '10%'
+        width: '14%'
     },
     {
         title: '单位',
@@ -69,8 +69,8 @@ const columns = [
     },
 ];
 
-
-const uploadData = ref(resetInput());
+const uploadData = defineModel('uploadData');
+uploadData.value = resetInput();
 
 async function handleInsert(key) {
     const hide = message.loading('更新中...', 0);
