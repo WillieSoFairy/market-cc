@@ -7,8 +7,12 @@
     </a-row>
     <a-row>
         <a-col :span="6">
-            <a-form><a-form-item label="选择日期"><a-date-picker v-model:value="order_date" format="YYYY/MM/DD"
-                        @change="getOrderData" /></a-form-item></a-form></a-col>
+            <a-form>
+                <a-form-item label="选择日期">
+                    <a-date-picker v-model:value="order_date" format="YYYY/MM/DD" @change="getOrderData" />
+                </a-form-item>
+            </a-form>
+        </a-col>
     </a-row>
     <a-row>
         <h1>1/5</h1>
@@ -18,8 +22,16 @@
         <a-col :span="14">
             <a-row>
                 <a-form>
-                    <a-form-item label="单位名称" style="width: 30em;"><a-input-search v-model:value="ent_name" enter-button
-                            @search="getOrderData" :loading="search_loading" /></a-form-item>
+                    <a-form-item label="单位名称" style="width: 30em;">
+                        <a-input-search v-model:value="ent_name" @search="getOrderData">
+                            <template #enterButton>
+                                <a-button type="primary">
+                                    <SearchOutlined v-if="!search_loading" />
+                                    <LoadingOutlined v-else />
+                                </a-button>
+                            </template>
+                        </a-input-search>
+                    </a-form-item>
                 </a-form>
             </a-row>
             <a-space direction="vertical" style="width: 100%;">
@@ -56,6 +68,7 @@ import { auth } from '../tcb/index.js';
 import testImg from '../images/1.jpg';
 import { get_orderData } from '../components/FormQueryOrder';
 import State2Struct from '../components/State2Struct.vue';
+import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 
 
 const now = dayjs(new Date());
