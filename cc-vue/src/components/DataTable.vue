@@ -19,9 +19,10 @@
             </template>
             <template v-if="column.key === 'operation'">
                 <span v-if="record.editable === false">
-                    <a-typography-link @click="handleEdit(record.key)">修改</a-typography-link>
+                    <a-typography-link @click="handleEdit(record.key)" :disabled="isEditing">修改</a-typography-link>
                     <a-divider type="vertical" />
-                    <a-typography-link type="danger" @click="showDeleteConfirm(record.id)">删除</a-typography-link>
+                    <a-typography-link type="danger" @click="showDeleteConfirm(record.id)"
+                        :disabled="isEditing">删除</a-typography-link>
                 </span>
                 <span v-else>
                     <a-typography-link type="success" v-if="record.id === null"
@@ -35,7 +36,7 @@
     </a-table>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { auth } from '../tcb/index.js';
 import { get_orderData, add_orderData, del_orderData, update_orderData } from '../components/FormQueryOrder';
 import { Modal, message } from 'ant-design-vue';
@@ -165,6 +166,19 @@ function resetInput() {
         "order_date": null
     };
 }
+
+const isEditing = computed(() => {
+    if (orderData.value === null || orderData.value.length === 0) {
+        return false;
+    }
+    else {
+        for (let x of orderData.value) {
+            if (x.editable === true) { return true; }
+        }
+        return false;
+    }
+});
+
 </script>
 
 
