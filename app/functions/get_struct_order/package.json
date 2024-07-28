@@ -1,0 +1,8 @@
+{
+    "name": "get_struct_order",
+    "version": "1.0.0",
+    "main": "index.js",
+    "dependencies": {
+        "@baiducloud/qianfan": "^0.1.6"
+    }
+}
