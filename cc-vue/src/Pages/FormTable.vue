@@ -15,10 +15,10 @@
         </a-col>
     </a-row>
     <a-row>
-        <h1>1/5</h1>
+        <h1>{{ pic.pageNum }}/{{ pic.total }}</h1>
     </a-row>
     <a-row>
-        <a-col :span="10"><a-image :src=testImg width="32vw" /></a-col>
+        <a-col :span="10"><a-image :src="pic.pic_url" width="32vw" /></a-col>
         <a-col :span="14">
             <a-row>
                 <a-form>
@@ -54,21 +54,22 @@
     <a-row style="margin-top: 30px;">
         <a-col :span="12">
             <a-space size="large">
-                <a-button>上一页</a-button>
-                <a-button type="primary">下一页</a-button>
+                <a-button @click="handlePreviousPage" :disabled="disabledPrevious">上一页</a-button>
+                <a-button type="primary" @click="handleNextPage" :disabled="disabledNext">下一页</a-button>
             </a-space>
         </a-col>
     </a-row>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import dayjs from 'dayjs';
 import DataTable from '../components/DataTable.vue';
 import { auth } from '../tcb/index.js';
-import testImg from '../images/1.jpg';
 import { get_orderData } from '../components/FormQueryOrder';
 import State2Struct from '../components/State2Struct.vue';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import { get_pic } from '../components/FormPics.js'
+import { message } from 'ant-design-vue';
 
 
 const now = dayjs(new Date());
@@ -76,6 +77,13 @@ const orderData = ref(null);
 const order_date = ref(now);
 const ent_name = ref(null);
 const LLMData = ref(null);
+const pic = ref({
+    pic_url: null,
+    ent_id: null,
+    pageNum: 0,
+    total: 0
+});
+const pageNum = ref(1);
 
 async function handleAddItem() {
     let newKey = null;
@@ -101,6 +109,7 @@ const search_loading = ref(false);
 async function getOrderData() {
     search_loading.value = true;
     orderData.value = await get_orderData(order_date.value, ent_name.value);
+    pic.value = await get_pic(order_date.value, 1);
     search_loading.value = false;
 }
 
@@ -125,5 +134,33 @@ const isEditing = computed(() => {
 const addDisabled = computed(() => {
     if (orderData.value === null) { return true; }
     else { return false; }
-})
+});
+
+onMounted(async () => {
+    await show_picture(order_date, pageNum);
+});
+
+async function show_picture(order_date, pageNum) {
+    try { pic.value = await get_pic(order_date.value, pageNum.value) }
+    catch (err) {
+        if (err === "Pages overflow") {
+            message.error("找不到图片");
+        }
+        throw err;
+    }
+}
+async function handleNextPage() {
+    pageNum.value++;
+    try { await show_picture(order_date, pageNum); }
+    catch { pageNum.value--; }
+}
+
+async function handlePreviousPage() {
+    pageNum.value--;
+    try { await show_picture(order_date, pageNum); }
+    catch { pageNum.value++; }
+}
+
+const disabledNext = computed(() => { return pic.value.pageNum >= pic.value.total });
+const disabledPrevious = computed(() => { return pic.value.pageNum <= 1 });
 </script>
