@@ -15,7 +15,7 @@ exports.main = async (event, context) => {
         if (page > total) { throw "Pages overflow"; }
         const details = await get_pic_detail(order_date, page);
         const pic_url = await get_pic_url(details.fileID);
-        return { pic_url: pic_url, ent_id: details.ent_id, pageNum: page, total: total }
+        return { pic_url: pic_url, ent_id: details.ent_id, pageNum: page, total: total, error: null }
     }
     catch (err) { return { error: err }; }
 }
