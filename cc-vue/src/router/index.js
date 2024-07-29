@@ -6,7 +6,8 @@ import SuperAdmin from '../Pages/SuperAdmin.vue';
 import AdminUsers from '../Pages/AdminUsers.vue';
 import AdminHome from '../Pages/AdminHome.vue';
 import Account from '../Pages/Account.vue';
-import HomePage from '../Pages/HomePage.vue'
+import HomePage from '../Pages/HomePage.vue';
+import Pictures from '../Pages/Pictures.vue';
 import { auth } from '../tcb/index.js';
 
 
@@ -17,6 +18,7 @@ const routes = [
         component: main,
         children: [
             { path: '', component: HomePage },
+            { path: 'pictures', component: Pictures },
             { path: 'form', component: FormTable },
             {
                 path: 'admin',

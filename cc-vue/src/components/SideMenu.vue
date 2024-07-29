@@ -5,7 +5,7 @@
 <script setup>
 import { computed, onMounted, ref, watch, h } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { HomeOutlined, DiffOutlined, SettingOutlined, EyeOutlined, UsergroupAddOutlined } from '@ant-design/icons-vue';
+import { HomeOutlined, DiffOutlined, SettingOutlined, EyeOutlined, UsergroupAddOutlined, PictureOutlined } from '@ant-design/icons-vue';
 
 const menu = [
     {
@@ -13,6 +13,12 @@ const menu = [
         key: '/',
         adminOnly: false,
         icon: () => h(HomeOutlined)
+    },
+    {
+        label: '文稿管理',
+        key: '/pictures',
+        adminOnly: false,
+        icon: () => h(PictureOutlined)
     },
     {
         label: '订单管理',
