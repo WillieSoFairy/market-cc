@@ -7,9 +7,8 @@ exports.main = async (event, context) => {
 
     try {
         const total = await query_pages(order_date);
-        console.log(total)
         if (page > total) { throw "Pages overflow"; }
-        const details = await get_pic_detail(order_date, page);
+        const details = await get_pic_detail(order_date, page, total);
         return details;
     }
     catch (err) { return { error: err }; }
@@ -24,11 +23,11 @@ async function query_pages(order_date) {
     catch { throw "Query pages error"; }
 }
 
-async function get_pic_detail(order_date, pageNum) {
+async function get_pic_detail(order_date, pageNum, total) {
     const sql = `SELECT * FROM order_pictures WHERE order_date='${order_date}' ORDER BY id LIMIT 1 OFFSET ${pageNum - 1};`;
     try {
         const [result] = await mysql.query(sql);
-        return { path: result[0].path, ent_id: result[0].ent_id };
+        return { path: result[0].path, ent_id: result[0].ent_id, total: total, pageNum: pageNum };
     }
     catch { throw "Query detail error"; }
 }
