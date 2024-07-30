@@ -14,7 +14,7 @@
                                 format="YYYY/MM/DD" />
                         </a-form-item>
                         <a-form-item label="企业名称">
-                            <a-input placeholder="非必填" />
+                            <a-input v-model:value="uploadForm.ent_name" placeholder="非必填" />
                         </a-form-item>
                         <a-form-item label="上传文稿">
                             <a-upload list-type="picture-card" :multiple="true" accept="image/*"
@@ -57,7 +57,8 @@ const uploadResult = ref(null);
 
 const uploadForm = ref({
     order_date: now,
-    fileList: []
+    fileList: [],
+    ent_name: null
 });
 const disabledUpload = computed(() => { return uploadForm.value.fileList.length === 0; });
 
@@ -77,17 +78,39 @@ async function handleUpload() {
     const pics = [];
     for (const pic of uploadForm.value.fileList) {
         const base64 = await base64_encode(pic.originFileObj);
-        pics.push({ pic_str: base64, name: pic.name });
+        pics.push({
+            pic_str: base64,
+            name: pic.name,
+            thumb: pic.thumbUrl.split(',')[1]
+        });
     }
-    const status = await upload_pics(pics, uploadForm.value.order_date);
+
+    let status = null;
+    try {
+        status = await upload_pics(pics, uploadForm.value.order_date, uploadForm.value.ent_name);
+    }
+    catch (err) {
+        status = {
+            data: pics.map((x) => { return { name: x.name, status: -1, info: '网络连接异常' } }),
+            total: pics.length
+        };
+    }
+    uploadResult.value = status.data.map((x) => {
+        if (x.status !== 0) {
+            let info = "网络连接异常";
+            if (x.info === 'Not normal pic format') { info = "图片格式不正确"; }
+            else if (x.info !== '网络连接异常') { info = "服务器异常"; }
+            return { name: x.name, status: '失败', info: info };
+        }
+        else { return { name: x.name, status: '成功', info: null }; }
+    });
     uploading.value = false;
-    uploadResult.value = get_status_df(status).data;
     showResult.value = true;
     uploadForm.value = {
         order_date: now,
-        fileList: []
+        fileList: [],
+        ent_name: null
     }
-    console.log(uploadResult.value)
 }
 
 function base64_encode(file) {
@@ -96,20 +119,6 @@ function base64_encode(file) {
         reader.readAsDataURL(file);
         reader.onload = () => { resolve(((reader.result).split(','))[1]); }
     });
-}
-
-function get_status_df(status) {
-    const status_df = { data: [], total: status.total };
-    for (const success of status.success) {
-        status_df.data.push({ name: success, status: '成功', info: null });
-    }
-    for (const fail of status.fail) {
-        let info = null;
-        if (fail.error === "Not normal pic format") { info = "文件格式不符合"; }
-        else { info = "网络错误"; }
-        status_df.data.push({ name: fail.file, status: '失败', info: info });
-    }
-    return status_df;
 }
 </script>
 
