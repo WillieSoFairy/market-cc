@@ -42,8 +42,10 @@ async function query_pic_df(page, where, order, limit) {
         });
         console.log(result)
         const fileIDs = result.data.map((x) => { return x.thumb_fileID; });
-        const { fileList } = await tcb.getTempFileURL({ fileList: fileIDs });
-        for (const i in result.data) { result.data[i].thumb = fileList[i].tempFileURL; }
+        if (fileIDs.length !== 0) {
+            const { fileList } = await tcb.getTempFileURL({ fileList: fileIDs });
+            for (const i in result.data) { result.data[i].thumb = fileList[i].tempFileURL; }
+        }
         return result;
     }
     catch (err) { throw err; }
