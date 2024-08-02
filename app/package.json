@@ -12,6 +12,8 @@
     "@baiducloud/qianfan": "^0.1.6",
     "@cloudbase/manager-node": "^4.2.9",
     "@cloudbase/node-sdk": "^2.11.0",
-    "mysql2": "^3.10.0"
+    "mysql2": "^3.10.0",
+    "sequelize": "^6.37.3",
+    "sequelize-auto": "^0.8.8"
   }
 }
