@@ -26,11 +26,10 @@ exports.main = async (event, context) => {
     const user_id = event.user_id;
 
     const sql = `UPDATE order_details 
-set good_id=${good_id},count=${count},unit_id=${unit_id},dept_id=${dept_id},user_id='${user_id}',create_time=NOW()
-WHERE id=${order_id};`;
+set good_id=?,count=?,unit_id=?,dept_id=?,user_id=?,create_time=NOW() WHERE id=?;`;
 
     try {
-        const [results] = await mysql.query(sql);
+        const [results] = await mysql.query(sql, [good_id, count, unit_id, dept_id, user_id, order_id]);
         return results.affectedRows;
     }
     catch (err) {
@@ -40,21 +39,21 @@ WHERE id=${order_id};`;
 }
 
 async function check_exist(table, field, data) {
-    const sql = `select id from ${table} WHERE ${field}='${data}';`;
-    const [results] = await mysql.query(sql);
+    const sql = `select id from ${table} WHERE ${field}=?;`;
+    const [results] = await mysql.query(sql, [data]);
     return results;
 }
 
 async function get_entID(order_id) {
-    const sql = `select ent_id from order_details WHERE id=${order_id};`;
-    const [result] = await mysql.query(sql);
+    const sql = `select ent_id from order_view2 WHERE id=?;`;
+    const [result] = await mysql.query(sql, [order_id]);
     console.log(result)
     return (result[0]).ent_id;
 }
 
 async function get_deptID(dept_name, ent_id) {
-    const sql = `select id from department WHERE dept_name='${dept_name}' and ent_id='${ent_id}';`
-    const [db_res] = await mysql.query(sql);
+    const sql = `select id from department WHERE dept_name=? and ent_id=?;`
+    const [db_res] = await mysql.query(sql, [dept_name, ent_id]);
     if (db_res.length !== 0) {
         return (db_res[0]).id;
     }
