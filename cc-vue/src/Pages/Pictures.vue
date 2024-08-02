@@ -48,8 +48,9 @@
                                 <span v-if="text !== null">{{ text }}</span>
                                 <span v-else class="undefined-ent">未指定</span>
                             </template>
-                            <template v-if="column.key === 'create_time'">{{ dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-                                }}</template>
+                            <template v-if="column.key === 'create_time'">
+                                {{ $dayjs(text).format('YYYY-MM-DD HH:mm:ss') }}
+                            </template>
                         </template>
                     </a-table>
                 </a-space>
@@ -64,7 +65,6 @@ import { h, onMounted, ref, watch } from 'vue';
 import UploadPicDrawer from '../components/UploadPicDrawer.vue';
 import { query_pic_df } from '../components/FormPics';
 import { ReloadOutlined } from '@ant-design/icons-vue';
-import dayjs from 'dayjs';
 const openDrawer = ref(false);
 const draft_df = ref(null);
 const pages = ref({
