@@ -11,8 +11,9 @@ async function get_pic(order_date, pageNum) {
             }
         });
         const { result } = res;
-        if (result.error !== null) { throw result.error; }
-        return { pic_url: result.pic_url, ent_id: result.ent_id, pageNum: result.pageNum, total: result.total }
+        if (result.status !== 0) { throw result.info; }
+        console.log(result)
+        return result;
     }
     catch (err) { throw err; }
 }
