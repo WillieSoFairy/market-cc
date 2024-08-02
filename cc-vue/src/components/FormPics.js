@@ -34,4 +34,19 @@ async function upload_pics(pics, order_date, ent_name) {
     catch (err) { throw err; }
 }
 
-export { get_pic, upload_pics };
+async function query_pic_df(page, where, order, limit) {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'query_drafts',
+            data: { page: page, where: where, order: order, limit: limit }
+        });
+        console.log(result)
+        const fileIDs = result.data.map((x) => { return x.thumb_fileID; });
+        const { fileList } = await tcb.getTempFileURL({ fileList: fileIDs });
+        for (const i in result.data) { result.data[i].thumb = fileList[i].tempFileURL; }
+        return result;
+    }
+    catch (err) { throw err; }
+}
+
+export { get_pic, upload_pics, query_pic_df };

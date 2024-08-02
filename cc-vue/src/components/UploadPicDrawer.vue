@@ -50,8 +50,9 @@ import dayjs from 'dayjs';
 import { upload_pics } from '../components/FormPics';
 
 const now = dayjs(new Date());
-const openDrawer = defineModel();
-const uploading = ref(false);
+const openDrawer = defineModel('openDrawer');
+const uploading = defineModel('uploading');
+uploading.value = false;
 const showResult = ref(false);
 const uploadResult = ref(null);
 
