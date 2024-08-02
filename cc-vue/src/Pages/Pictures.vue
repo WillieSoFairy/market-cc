@@ -1,16 +1,21 @@
 <template>
     <a-space direction="vertical" style="width: 100%;">
         <a-row>
-            <a-col :span="24"><a-button type="primary" @click="handleDrawerOpen">上传</a-button></a-col>
+            <a-col :span="24">
+                <a-space>
+                    <a-button type="primary" @click="handleDrawerOpen">上传</a-button>
+                    <a-button :icon="h(ReloadOutlined)" @click="get_pics_list" />
+                </a-space>
+            </a-col>
         </a-row>
         <a-row :gutter="16">
-            <a-col :span="3">
+            <a-col :span="5">
                 <a-card title="筛选器" :bordered="false">
                     <a-form layout="vertical">
-                        <a-form-item label="日期">
-                            <a-range-picker size="small" :placeholder="['开始', '结束']" />
+                        <a-form-item label="订单日期">
+                            <a-range-picker size="small" :placeholder="['开始日期', '结束日期']" />
                         </a-form-item>
-                        <a-form-item label="企业">
+                        <a-form-item label="企业名称">
                             <a-select mode="multiple" placeholder="Please select"
                                 :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
                                 size="small" />
@@ -29,23 +34,75 @@
                     </a-form-item>
                 </a-card>
             </a-col>
-            <a-col :span="21">
-                <a-tabs>
-                    <a-tab-pane key="1" tab="按日期归类">Content of Tab Pane 1</a-tab-pane>
-                    <a-tab-pane key="2" tab="按企业归类" force-render>Content of Tab Pane 2</a-tab-pane>
-                </a-tabs>
+            <a-col :span="19">
+                <a-space direction="vertical" style="width: 100%;">
+                    <a-pagination v-model:current="pages.current" :total="pages.total" v-model:pageSize="pages.pageSize"
+                        show-size-changer @change="get_pics_list" :showTotal="t => `共${t}项符合条件的文稿`"
+                        :pageSizeOptions="['5', '10', '15', '20']" />
+                    <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
+                        <template #bodyCell="{ column, text, record }">
+                            <template v-if="column.key === 'thumb'">
+                                <a-image :src="text" :preview="false" width="100px" />
+                            </template>
+                            <template v-if="column.key === 'ent_name'">
+                                <span v-if="text !== null">{{ text }}</span>
+                                <span v-else class="undefined-ent">未指定</span>
+                            </template>
+                            <template v-if="column.key === 'create_time'">{{ dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+                                }}</template>
+                        </template>
+                    </a-table>
+                </a-space>
             </a-col>
         </a-row>
     </a-space>
-    <upload-pic-drawer v-model="openDrawer" />
+    <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
 
 </template>
 <script setup>
-import { ref } from 'vue';
+import { h, onMounted, ref, watch } from 'vue';
 import UploadPicDrawer from '../components/UploadPicDrawer.vue';
+import { query_pic_df } from '../components/FormPics';
+import { ReloadOutlined } from '@ant-design/icons-vue';
+import dayjs from 'dayjs';
 const openDrawer = ref(false);
+const draft_df = ref(null);
+const pages = ref({
+    current: 1,
+    total: 0,
+    pageSize: 5
+});
+const loading = ref(false);
+onMounted(async () => { await get_pics_list(); });
+
 function handleDrawerOpen() {
     openDrawer.value = true;
 }
+const uploading = ref(false);
+watch(uploading, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
+
+async function get_pics_list() {
+    loading.value = true;
+    const { data, totalNum } = await query_pic_df(pages.value.current, null, [['create_time', 'DESC']], pages.value.pageSize);
+    draft_df.value = data;
+    pages.value.total = totalNum;
+    loading.value = false;
+}
+
+const columns = [
+    { key: 'thumb', dataIndex: 'thumb', width: '100px' },
+    { key: 'ent_name', dataIndex: 'ent_name', title: '企业名称' },
+    { key: 'order_date', dataIndex: 'order_date', title: '订单日期' },
+    { key: 'create_time', dataIndex: 'create_time', title: '上传时间' }
+]
+
+
 const items = ref(['jack', 'lucy']);
 </script>
+
+<style scoped>
+.undefined-ent {
+    font-style: italic;
+    color: gray;
+}
+</style>
