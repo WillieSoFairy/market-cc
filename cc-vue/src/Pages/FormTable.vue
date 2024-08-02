@@ -8,7 +8,7 @@
     <a-row>
         <a-col :span="6">
             <a-form>
-                <a-form-item label="选择日期">
+                <a-form-item label="订单日期">
                     <a-date-picker v-model:value="order_date" format="YYYY/MM/DD" @change="getOrderData" />
                 </a-form-item>
             </a-form>
@@ -23,14 +23,7 @@
             <a-row>
                 <a-form>
                     <a-form-item label="单位名称" style="width: 30em;">
-                        <a-input-search v-model:value="ent_name" @search="getOrderData">
-                            <template #enterButton>
-                                <a-button type="primary">
-                                    <SearchOutlined v-if="!search_loading" />
-                                    <LoadingOutlined v-else />
-                                </a-button>
-                            </template>
-                        </a-input-search>
+                        <a-input v-model:value="pic.ent_name" :disabled="pic.ent_name !== null" placeholder="指定企业名称" />
                     </a-form-item>
                 </a-form>
             </a-row>
@@ -38,7 +31,7 @@
                 <a-row>
                     <a-col :span="10">
                         <a-button type="primary" @click="handleAddItem" v-if="!isEditing"
-                            :disabled="addDisabled">新增项目</a-button>
+                            :disabled="addDisabled || pic.ent_name === null">新增项目</a-button>
                         <State2Struct v-model="LLMData" v-else />
                     </a-col>
                 </a-row>
@@ -78,6 +71,8 @@ const order_date = ref(now);
 const ent_name = ref(null);
 const LLMData = ref(null);
 const pic = ref({
+    ent_name: null,
+    pic_id: null,
     pic_url: null,
     ent_id: null,
     pageNum: 0,
@@ -98,9 +93,9 @@ async function handleAddItem() {
     orderData.value.push({
         "key": newKey,
         "id": null,
-        "ent_name": ent_name.value,
+        "ent_id": pic.value.ent_id,
+        "pic_id": pic.value.pic_id,
         "user_id": customUserId,
-        "order_date": order_date.value,
         "editable": true
     });
 }
@@ -108,8 +103,14 @@ async function handleAddItem() {
 const search_loading = ref(false);
 async function getOrderData() {
     search_loading.value = true;
-    orderData.value = await get_orderData(order_date.value, ent_name.value);
-    pic.value = await get_pic(order_date.value, 1);
+    try {
+        pic.value = await get_pic(order_date.value, pageNum.value);
+    }
+    catch { message.error("找不到图片"); }
+    try {
+        orderData.value = await get_orderData(pic.value.pic_id);
+    }
+    catch { message.error("加载订单信息失败"); }
     search_loading.value = false;
 }
 
@@ -137,27 +138,18 @@ const addDisabled = computed(() => {
 });
 
 onMounted(async () => {
-    await show_picture(order_date, pageNum);
+    await getOrderData();
 });
 
-async function show_picture(order_date, pageNum) {
-    try { pic.value = await get_pic(order_date.value, pageNum.value) }
-    catch (err) {
-        if (err === "Pages overflow") {
-            message.error("找不到图片");
-        }
-        throw err;
-    }
-}
 async function handleNextPage() {
     pageNum.value++;
-    try { await show_picture(order_date, pageNum); }
+    try { await getOrderData(); }
     catch { pageNum.value--; }
 }
 
 async function handlePreviousPage() {
     pageNum.value--;
-    try { await show_picture(order_date, pageNum); }
+    try { await getOrderData(); }
     catch { pageNum.value++; }
 }
 

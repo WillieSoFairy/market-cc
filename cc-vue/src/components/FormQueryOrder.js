@@ -1,14 +1,11 @@
 import { tcb } from '../tcb/index.js';
 import dayjs from 'dayjs';
 
-async function get_orderData(order_date, ent_name) {
+async function get_orderData(pic_id) {
     let result = null;
     await tcb.callFunction({
         name: 'query_order',
-        data: {
-            "order_date": dayjs(order_date).format('YYYY-MM-DD'),
-            "ent_name": ent_name
-        }
+        data: { pic_id: pic_id }
     }).then((res) => {
         result = res.result.map((x, i) => { x.key = i; x.editable = false; return x; });
     });
@@ -18,13 +15,13 @@ async function get_orderData(order_date, ent_name) {
 async function add_orderData(uploadData) {
     let insertId = null;
     const upload = {
-        "ent_name": uploadData.ent_name,
+        "ent_id": uploadData.ent_id,
         "dept_name": uploadData.dept_name,
         "good_name": uploadData.good_name,
         "unit_name": uploadData.unit_name,
         "count": uploadData.count,
         "user_id": uploadData.user_id,
-        "order_date": uploadData.order_date.format('YYYY-MM-DD')
+        "pic_id": uploadData.pic_id
     }
     await tcb.callFunction({
         name: "add_order",
