@@ -71,17 +71,18 @@ const columns = [
 ];
 
 const uploadData = defineModel('uploadData');
+// const currentPicID = defineModel('currentPicID');
 uploadData.value = resetInput();
 
 async function handleInsert(key) {
     const hide = message.loading('更新中...', 0);
     const keyItem = { ...orderData.value[key] };
-    uploadData.value.ent_name = keyItem.ent_name;
+    uploadData.value.ent_id = keyItem.ent_id;
     uploadData.value.user_id = keyItem.user_id;
-    uploadData.value.order_date = keyItem.order_date;
+    uploadData.value.pic_id = keyItem.pic_id;
 
     await add_orderData(uploadData.value);
-    orderData.value = await get_orderData(keyItem.order_date, keyItem.ent_name);
+    orderData.value = await get_orderData(keyItem.pic_id);
     hide();
     message.success('添加成功', 1.5);
 
@@ -112,7 +113,7 @@ async function handleUpdate(key) {
     }
     const status = await update_orderData(updateData);
     updateRow.editable = false;
-    orderData.value = await get_orderData(updateRow.order_date, updateRow.ent_name);
+    orderData.value = await get_orderData(updateRow.pic_id);
     hide();
     if (status === 1) { message.success('更新成功', 1.5); }
     else { message.error('更新失败', 1.5); }
@@ -136,7 +137,7 @@ async function handleDel(order_id) {
     const result = await del_orderData(order_id);
     if (result) { message.success("删除成功"); }
     else { message.error("删除失败"); }
-    orderData.value = await get_orderData(keyItem.order_date, keyItem.ent_name);
+    orderData.value = await get_orderData(keyItem.pic_id);
     deleting.value = false;
 }
 
