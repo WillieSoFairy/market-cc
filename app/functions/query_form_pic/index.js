@@ -15,25 +15,31 @@ exports.main = async (event, context) => {
         if (page > total) { throw "Pages overflow"; }
         const details = await get_pic_detail(order_date, page);
         const pic_url = await get_pic_url(details.fileID);
-        return { pic_url: pic_url, ent_id: details.ent_id, pageNum: page, total: total, error: null }
+        return {
+            pic_id: details.pic_id,
+            pic_url: pic_url,
+            ent_id: details.ent_id,
+            ent_name: details.ent_name,
+            pageNum: page, total: total, status: 0, info: null
+        }
     }
-    catch (err) { return { error: err }; }
+    catch (err) { return { status: -1, info: err }; }
 }
 
 async function query_pages(order_date) {
-    const sql = `select count(*) as pages from order_pictures WHERE order_date='${order_date}'`;
+    const sql = `select count(*) as pages from pictures WHERE order_date=?`;
     try {
-        const [result] = await mysql.query(sql);
+        const [result] = await mysql.query(sql, [order_date]);
         return result[0].pages;
     }
     catch { throw "Query pages error"; }
 }
 
 async function get_pic_detail(order_date, pageNum) {
-    const sql = `SELECT * FROM order_pictures WHERE order_date='${order_date}' ORDER BY id LIMIT 1 OFFSET ${pageNum - 1};`;
+    const sql = `SELECT * FROM pictures WHERE order_date=? ORDER BY id LIMIT 1 OFFSET ?;`;
     try {
-        const [result] = await mysql.query(sql);
-        return { fileID: result[0].path, ent_id: result[0].ent_id };
+        const [result] = await mysql.query(sql, [order_date, pageNum - 1]);
+        return { pic_id: result[0].id, fileID: result[0].pic_fileID, ent_id: result[0].ent_id, ent_name: result[0].ent_name };
     }
     catch { throw "Query detail error"; }
 }
