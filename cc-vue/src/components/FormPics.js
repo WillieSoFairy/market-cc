@@ -41,7 +41,6 @@ async function query_pic_df(page, where, order, limit) {
             name: 'query_drafts',
             data: { page: page, where: where, order: order, limit: limit }
         });
-        console.log(result)
         const fileIDs = result.data.map((x) => { return x.thumb_fileID; });
         if (fileIDs.length !== 0) {
             const { fileList } = await tcb.getTempFileURL({ fileList: fileIDs });
@@ -52,4 +51,26 @@ async function query_pic_df(page, where, order, limit) {
     catch (err) { throw err; }
 }
 
-export { get_pic, upload_pics, query_pic_df };
+// async function update_pic_info(pic_id, param) {
+//     try {
+//         const { result } = await tcb.callFunction({
+//             name: 'update_draft',
+//             data: { param: param, pic_id: pic_id }
+//         });
+//         console.log(result);
+//     }
+//     catch (err) { throw err; }
+// }
+
+async function bind_ent_pic(ent_name, pic_id) {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'bind_ent_pic',
+            data: { ent_name: ent_name, pic_id: pic_id }
+        });
+        if (result.status !== 0) { throw result.info; }
+        return result.affectedRows;
+    }
+    catch (err) { throw err; }
+}
+export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic };
