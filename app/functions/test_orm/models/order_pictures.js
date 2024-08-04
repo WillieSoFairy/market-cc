@@ -40,6 +40,10 @@ module.exports = function(sequelize, DataTypes) {
     removed: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    reamrk: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,

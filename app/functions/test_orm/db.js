@@ -6,7 +6,7 @@ const initModels = require('./models/init-models');
 
 try {
     const sequelize = new Sequelize(database, user, password, {
-        host: host, dialect: 'mysql'
+        host: host, dialect: 'mysql', logging: false
     });
     module.exports = initModels(sequelize);
 }
