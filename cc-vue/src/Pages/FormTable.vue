@@ -20,18 +20,21 @@
     <a-row>
         <a-col :span="10"><a-image :src="pic.pic_url" width="32vw" /></a-col>
         <a-col :span="14">
-            <a-row>
-                <a-form>
-                    <a-form-item label="单位名称" style="width: 30em;">
-                        <a-input v-model:value="pic.ent_name" :disabled="pic.ent_name !== null" placeholder="指定企业名称" />
-                    </a-form-item>
-                </a-form>
-            </a-row>
             <a-space direction="vertical" style="width: 100%;">
+                <a-row>
+                    <a-form layout="inline">
+                        <a-form-item label="单位名称" style="width: 30em;">
+                            <a-input v-model:value="pic.ent_name" :disabled="!undefinedEntName"
+                                placeholder="指定企业名称" /></a-form-item>
+                        <a-form-item v-show="undefinedEntName">
+                            <a-button type="primary" @click="handleDefineEnt">确认</a-button>
+                        </a-form-item>
+                    </a-form>
+                </a-row>
                 <a-row>
                     <a-col :span="10">
                         <a-button type="primary" @click="handleAddItem" v-if="!isEditing"
-                            :disabled="addDisabled || pic.ent_name === null">新增项目</a-button>
+                            :disabled="addDisabled || undefinedEntName">新增项目</a-button>
                         <State2Struct v-model="LLMData" v-else />
                     </a-col>
                 </a-row>
@@ -61,14 +64,14 @@ import { auth } from '../tcb/index.js';
 import { get_orderData } from '../components/FormQueryOrder';
 import State2Struct from '../components/State2Struct.vue';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-import { get_pic } from '../components/FormPics.js'
+import { get_pic, bind_ent_pic } from '../components/FormPics.js'
 import { message } from 'ant-design-vue';
 
 
 const now = dayjs(new Date());
 const orderData = ref(null);
 const order_date = ref(now);
-const ent_name = ref(null);
+const undefinedEntName = ref(false);
 const LLMData = ref(null);
 const pic = ref({
     ent_name: null,
@@ -105,6 +108,9 @@ async function getOrderData() {
     search_loading.value = true;
     try {
         pic.value = await get_pic(order_date.value, pageNum.value);
+        if (pic.value.ent_name === null) { undefinedEntName.value = true; }
+        else { undefinedEntName.value = false; }
+
     }
     catch { message.error("找不到图片"); }
     try {
@@ -112,6 +118,15 @@ async function getOrderData() {
     }
     catch { message.error("加载订单信息失败"); }
     search_loading.value = false;
+}
+
+async function handleDefineEnt() {
+    try {
+        const result = await bind_ent_pic(pic.value.ent_name, pic.value.pic_id);
+        console.log(result);
+        await getOrderData();
+    }
+    catch (err) { console.err(err); }
 }
 
 const isEditing = computed(() => {
