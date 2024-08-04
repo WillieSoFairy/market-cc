@@ -13,10 +13,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "Create Time"
     },
-    ent_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     dept_id: {
       type: DataTypes.INTEGER,
       allowNull: true
@@ -35,10 +31,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     user_id: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    order_date: {
-      type: DataTypes.DATEONLY,
       allowNull: true
     },
     pic_id: {

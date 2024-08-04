@@ -36,6 +36,10 @@ module.exports = function(sequelize, DataTypes) {
     upload_user: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    remark: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
