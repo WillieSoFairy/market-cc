@@ -34,7 +34,7 @@ async function get_entID(ent_name) {
         const db_res = await check_exist(ent_name);
         if (db_res.length !== 0) { return db_res[0].id; }
         else {
-            const { result } = app.callFunction({
+            const { result } = await app.callFunction({
                 name: 'add_ent',
                 data: { ent_name: ent_name }
             });
