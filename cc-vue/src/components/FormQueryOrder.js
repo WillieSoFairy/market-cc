@@ -62,4 +62,15 @@ async function update_orderData(updateData) {
     return status;
 }
 
-export { get_orderData, add_orderData, del_orderData, update_orderData };
+async function get_disabled_dates() {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'get_form_disabled_dates',
+        });
+        if (result.status !== 0) { throw result.info; }
+        return result.dates.map((x) => { return dayjs(x); });
+    }
+    catch (err) { throw err; }
+}
+
+export { get_orderData, add_orderData, del_orderData, update_orderData, get_disabled_dates };

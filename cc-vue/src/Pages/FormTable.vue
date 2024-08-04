@@ -9,7 +9,8 @@
         <a-col :span="6">
             <a-form>
                 <a-form-item label="订单日期">
-                    <a-date-picker v-model:value="order_date" format="YYYY/MM/DD" @change="getOrderData" />
+                    <a-date-picker v-model:value="order_date" format="YYYY/MM/DD" @change="getOrderData"
+                        :disabled-date="disabledDate" :show-today="false" />
                 </a-form-item>
             </a-form>
         </a-col>
@@ -61,18 +62,18 @@ import { computed, onMounted, ref } from 'vue';
 import dayjs from 'dayjs';
 import DataTable from '../components/DataTable.vue';
 import { auth } from '../tcb/index.js';
-import { get_orderData } from '../components/FormQueryOrder';
+import { get_orderData, get_disabled_dates } from '../components/FormQueryOrder';
 import State2Struct from '../components/State2Struct.vue';
-import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { get_pic, bind_ent_pic } from '../components/FormPics.js'
 import { message } from 'ant-design-vue';
 
 
-const now = dayjs(new Date());
+// const now = dayjs(new Date());
 const orderData = ref(null);
-const order_date = ref(now);
+const order_date = ref(null);
 const undefinedEntName = ref(false);
 const LLMData = ref(null);
+let disabled_dates_list = [];
 const pic = ref({
     ent_name: null,
     pic_id: null,
@@ -107,26 +108,42 @@ const search_loading = ref(false);
 async function getOrderData() {
     search_loading.value = true;
     try {
+        disabled_dates_list = await get_disabled_dates();
+        order_date.value = disabled_dates_list[0];
+    }
+    catch { message.error("网络错误"); }
+    try {
         pic.value = await get_pic(order_date.value, pageNum.value);
         if (pic.value.ent_name === null) { undefinedEntName.value = true; }
         else { undefinedEntName.value = false; }
 
     }
-    catch { message.error("找不到图片"); }
-    try {
-        orderData.value = await get_orderData(pic.value.pic_id);
+    catch {
+        message.error("找不到图片");
+        pic.value = {
+            ent_name: null,
+            pic_id: null,
+            pic_url: null,
+            ent_id: null,
+            pageNum: 0,
+            total: 0
+        };
     }
-    catch { message.error("加载订单信息失败"); }
+    try { orderData.value = await get_orderData(pic.value.pic_id); }
+    catch {
+        message.error("加载订单信息失败");
+        orderData.value = null;
+    }
     search_loading.value = false;
 }
 
 async function handleDefineEnt() {
     try {
-        const result = await bind_ent_pic(pic.value.ent_name, pic.value.pic_id);
-        console.log(result);
+        await bind_ent_pic(pic.value.ent_name, pic.value.pic_id);
         await getOrderData();
+        message.success(`成功匹配企业：${pic.value.ent_name}`);
     }
-    catch (err) { console.err(err); }
+    catch (err) { message.error(`企业匹配失败`); }
 }
 
 const isEditing = computed(() => {
@@ -152,9 +169,7 @@ const addDisabled = computed(() => {
     else { return false; }
 });
 
-onMounted(async () => {
-    await getOrderData();
-});
+onMounted(async () => { await getOrderData(); });
 
 async function handleNextPage() {
     pageNum.value++;
@@ -166,6 +181,10 @@ async function handlePreviousPage() {
     pageNum.value--;
     try { await getOrderData(); }
     catch { pageNum.value++; }
+}
+
+function disabledDate(current) {
+    return !disabled_dates_list.some((x) => { return x.isSame(current, 'day'); });
 }
 
 const disabledNext = computed(() => { return pic.value.pageNum >= pic.value.total });
