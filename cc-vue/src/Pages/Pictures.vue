@@ -38,7 +38,9 @@
                 <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="column.key === 'thumb'">
-                            <a-image :src="text" :preview="false" width="100px" />
+                            <a @click="handlePicClick(record.id)">
+                                <a-image :src="text" :preview="false" width="100px" />
+                            </a>
                         </template>
                         <template v-if="column.key === 'ent_name'">
                             <span v-if="text !== null">{{ text }}</span>
@@ -52,16 +54,18 @@
             </a-flex>
         </a-col>
     </a-row>
-
     <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
+    <update-pic-modal v-model:open="openModal" :pic-id="detail_picID" />
 
 </template>
 <script setup>
 import { h, onMounted, ref, watch } from 'vue';
 import UploadPicDrawer from '../components/UploadPicDrawer.vue';
+import UpdatePicModal from '../components/UpdatePicModal.vue';
 import { query_pic_df } from '../components/FormPics';
 import { ReloadOutlined } from '@ant-design/icons-vue';
 const openDrawer = ref(false);
+const openModal = ref(false);
 const draft_df = ref(null);
 const pages = ref({
     current: 1,
@@ -83,6 +87,12 @@ async function get_pics_list() {
     draft_df.value = data;
     pages.value.total = totalNum;
     loading.value = false;
+}
+
+const detail_picID = ref(0);
+function handlePicClick(pic_id) {
+    openModal.value = true;
+    detail_picID.value = pic_id;
 }
 
 const columns = [

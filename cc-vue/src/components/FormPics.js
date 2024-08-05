@@ -12,7 +12,6 @@ async function get_pic(order_date, pageNum) {
         });
         const { result } = res;
         if (result.status !== 0) { throw result.info; }
-        console.log(result)
         return result;
     }
     catch (err) { throw err; }
@@ -51,16 +50,15 @@ async function query_pic_df(page, where, order, limit) {
     catch (err) { throw err; }
 }
 
-// async function update_pic_info(pic_id, param) {
-//     try {
-//         const { result } = await tcb.callFunction({
-//             name: 'update_draft',
-//             data: { param: param, pic_id: pic_id }
-//         });
-//         console.log(result);
-//     }
-//     catch (err) { throw err; }
-// }
+async function update_pic_info(pic_id, param) {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'update_draft',
+            data: { param: param, pic_id: pic_id }
+        });
+    }
+    catch (err) { throw err; }
+}
 
 async function bind_ent_pic(ent_name, pic_id) {
     try {
@@ -73,4 +71,17 @@ async function bind_ent_pic(ent_name, pic_id) {
     }
     catch (err) { throw err; }
 }
-export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic };
+
+async function get_pic_detail(pic_id) {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'query_pic_details',
+            data: { pic_id: pic_id }
+        });
+        if (result.status !== 0) { throw result.info; }
+        result.order_date = dayjs(result.order_date);
+        return result;
+    }
+    catch (err) { throw err; }
+}
+export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic, get_pic_detail };
