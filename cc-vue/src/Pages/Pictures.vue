@@ -1,62 +1,58 @@
 <template>
-    <a-space direction="vertical" style="width: 100%;">
-        <a-row>
-            <a-col :span="24">
+    <a-page-header title="文稿管理" class="plain-title" />
+    <a-row :gutter="[16, 16]">
+        <a-col :xs="24" :xl="7" :xxl="5">
+            <a-card title="筛选器" :bordered="false">
+                <a-form layout="vertical">
+                    <a-form-item label="订单日期">
+                        <a-range-picker size="small" :placeholder="['开始日期', '结束日期']" />
+                    </a-form-item>
+                    <a-form-item label="企业名称">
+                        <a-select mode="multiple" placeholder="Please select"
+                            :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
+                            size="small" />
+                    </a-form-item>
+                    <a-form-item label="流程进度">
+                        <a-select mode="multiple" placeholder="Please select"
+                            :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
+                            size="small" />
+                    </a-form-item>
+                </a-form>
+                <a-form-item>
+                    <a-space>
+                        <a-button type="primary" size="small">筛选</a-button>
+                        <a-button size="small">还原</a-button>
+                    </a-space>
+                </a-form-item>
+            </a-card>
+        </a-col>
+        <a-col :xs="24" :xl="17" :xxl="19">
+            <a-flex vertical gap="small">
                 <a-space>
                     <a-button type="primary" @click="handleDrawerOpen">上传</a-button>
                     <a-button :icon="h(ReloadOutlined)" @click="get_pics_list" />
-                </a-space>
-            </a-col>
-        </a-row>
-        <a-row :gutter="16">
-            <a-col :span="5">
-                <a-card title="筛选器" :bordered="false">
-                    <a-form layout="vertical">
-                        <a-form-item label="订单日期">
-                            <a-range-picker size="small" :placeholder="['开始日期', '结束日期']" />
-                        </a-form-item>
-                        <a-form-item label="企业名称">
-                            <a-select mode="multiple" placeholder="Please select"
-                                :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
-                                size="small" />
-                        </a-form-item>
-                        <a-form-item label="流程进度">
-                            <a-select mode="multiple" placeholder="Please select"
-                                :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
-                                size="small" />
-                        </a-form-item>
-                    </a-form>
-                    <a-form-item>
-                        <a-space>
-                            <a-button type="primary" size="small">筛选</a-button>
-                            <a-button size="small">还原</a-button>
-                        </a-space>
-                    </a-form-item>
-                </a-card>
-            </a-col>
-            <a-col :span="19">
-                <a-space direction="vertical" style="width: 100%;">
                     <a-pagination v-model:current="pages.current" :total="pages.total" v-model:pageSize="pages.pageSize"
                         show-size-changer @change="get_pics_list" :showTotal="t => `共${t}项符合条件的文稿`"
                         :pageSizeOptions="['5', '10', '15', '20']" />
-                    <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
-                        <template #bodyCell="{ column, text, record }">
-                            <template v-if="column.key === 'thumb'">
-                                <a-image :src="text" :preview="false" width="100px" />
-                            </template>
-                            <template v-if="column.key === 'ent_name'">
-                                <span v-if="text !== null">{{ text }}</span>
-                                <span v-else class="undefined-ent">未指定</span>
-                            </template>
-                            <template v-if="column.key === 'create_time'">
-                                {{ $dayjs(text).format('YYYY-MM-DD HH:mm:ss') }}
-                            </template>
-                        </template>
-                    </a-table>
                 </a-space>
-            </a-col>
-        </a-row>
-    </a-space>
+                <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
+                    <template #bodyCell="{ column, text, record }">
+                        <template v-if="column.key === 'thumb'">
+                            <a-image :src="text" :preview="false" width="100px" />
+                        </template>
+                        <template v-if="column.key === 'ent_name'">
+                            <span v-if="text !== null">{{ text }}</span>
+                            <span v-else class="undefined-ent">未指定</span>
+                        </template>
+                        <template v-if="column.key === 'create_time'">
+                            {{ $dayjs(text).format('YYYY-MM-DD HH:mm:ss') }}
+                        </template>
+                    </template>
+                </a-table>
+            </a-flex>
+        </a-col>
+    </a-row>
+
     <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
 
 </template>
@@ -95,14 +91,19 @@ const columns = [
     { key: 'order_date', dataIndex: 'order_date', title: '订单日期' },
     { key: 'create_time', dataIndex: 'create_time', title: '上传时间' }
 ]
-
-
-const items = ref(['jack', 'lucy']);
 </script>
 
 <style scoped>
 .undefined-ent {
     font-style: italic;
     color: gray;
+}
+
+.plain-title {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgb(235, 237, 240);
 }
 </style>
