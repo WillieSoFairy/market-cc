@@ -80,6 +80,7 @@ function handleDrawerOpen() {
 }
 const uploading = ref(false);
 watch(uploading, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
+watch(openModal, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
 
 async function get_pics_list() {
     loading.value = true;
