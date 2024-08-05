@@ -84,4 +84,16 @@ async function get_pic_detail(pic_id) {
     }
     catch (err) { throw err; }
 }
-export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic, get_pic_detail };
+
+async function del_draft(pic_id, upload_user) {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'del_draft',
+            data: { pic_id: pic_id, upload_user: upload_user }
+        });
+        if (result.status !== 0) { throw result.info; }
+        return result;
+    }
+    catch (err) { throw err; }
+}
+export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic, get_pic_detail, del_draft };
