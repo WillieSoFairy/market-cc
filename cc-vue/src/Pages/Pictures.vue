@@ -27,31 +27,37 @@
             </a-card>
         </a-col>
         <a-col :xs="24" :xl="17" :xxl="19">
-            <a-flex vertical gap="small">
-                <a-space>
-                    <a-button type="primary" @click="handleDrawerOpen">上传</a-button>
-                    <a-button :icon="h(ReloadOutlined)" @click="get_pics_list" />
+            <a-row :gutter="[16, 16]" justify="space-between">
+                <a-col :xs="24" :md="4" :xxl="3">
+                    <a-space>
+                        <a-button type="primary" @click="handleDrawerOpen">上传</a-button>
+                        <a-button :icon="h(ReloadOutlined)" @click="get_pics_list" />
+                    </a-space>
+                </a-col>
+                <a-col flex="auto">
                     <a-pagination v-model:current="pages.current" :total="pages.total" v-model:pageSize="pages.pageSize"
                         show-size-changer @change="get_pics_list" :showTotal="t => `共${t}项符合条件的文稿`"
                         :pageSizeOptions="['5', '10', '15', '20']" />
-                </a-space>
-                <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
-                    <template #bodyCell="{ column, text, record }">
-                        <template v-if="column.key === 'thumb'">
-                            <a @click="handlePicClick(record.id)">
-                                <a-image :src="text" :preview="false" width="100px" />
-                            </a>
+                </a-col>
+                <a-col :xs="24">
+                    <a-table :dataSource="draft_df" :columns="columns" :pagination="false" :loading="loading">
+                        <template #bodyCell="{ column, text, record }">
+                            <template v-if="column.key === 'thumb'">
+                                <a @click="handlePicClick(record.id)">
+                                    <a-image :src="text" :preview="false" width="100px" />
+                                </a>
+                            </template>
+                            <template v-if="column.key === 'ent_name'">
+                                <span v-if="text !== null">{{ text }}</span>
+                                <span v-else class="undefined-ent">未指定</span>
+                            </template>
+                            <template v-if="column.key === 'create_time'">
+                                {{ $dayjs(text).format('YYYY-MM-DD HH:mm:ss') }}
+                            </template>
                         </template>
-                        <template v-if="column.key === 'ent_name'">
-                            <span v-if="text !== null">{{ text }}</span>
-                            <span v-else class="undefined-ent">未指定</span>
-                        </template>
-                        <template v-if="column.key === 'create_time'">
-                            {{ $dayjs(text).format('YYYY-MM-DD HH:mm:ss') }}
-                        </template>
-                    </template>
-                </a-table>
-            </a-flex>
+                    </a-table>
+                </a-col>
+            </a-row>
         </a-col>
     </a-row>
     <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
