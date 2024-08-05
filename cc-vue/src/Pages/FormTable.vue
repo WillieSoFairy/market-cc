@@ -109,7 +109,6 @@ async function getOrderData() {
     search_loading.value = true;
     try {
         disabled_dates_list = await get_disabled_dates();
-        order_date.value = disabled_dates_list[0];
     }
     catch { message.error("网络错误"); }
     try {
@@ -169,7 +168,13 @@ const addDisabled = computed(() => {
     else { return false; }
 });
 
-onMounted(async () => { await getOrderData(); });
+onMounted(async () => {
+    try {
+        disabled_dates_list = await get_disabled_dates();
+        order_date.value = disabled_dates_list[0];
+    }
+    catch { message.error("网络错误"); } await getOrderData();
+});
 
 async function handleNextPage() {
     pageNum.value++;
