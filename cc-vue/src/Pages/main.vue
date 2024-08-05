@@ -21,7 +21,7 @@
       </a-dropdown>
     </a-layout-header>
     <a-layout>
-      <a-layout-sider width="220" style="background-color: #fff">
+      <a-layout-sider width="220" style="background-color: #fff" collapsed-width="0" breakpoint="lg">
         <side-menu v-model:auth="auth_code" />
       </a-layout-sider>
       <a-layout-content :style="{ padding: '24px', minHeight: '100vh' }">
