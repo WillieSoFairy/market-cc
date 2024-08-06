@@ -61,7 +61,7 @@
         </a-col>
     </a-row>
     <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
-    <update-pic-modal v-model:open="openModal" :pic-id="detail_picID" />
+    <update-pic-modal v-model:open="openModal" :pic-id="detail_picID" @submit="handleModalSubmitted" />
 
 </template>
 <script setup>
@@ -86,7 +86,7 @@ function handleDrawerOpen() {
 }
 const uploading = ref(false);
 watch(uploading, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
-watch(openModal, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
+// watch(openModal, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
 
 async function get_pics_list() {
     loading.value = true;
@@ -95,6 +95,8 @@ async function get_pics_list() {
     pages.value.total = totalNum;
     loading.value = false;
 }
+
+async function handleModalSubmitted() { await get_pics_list(); }
 
 const detail_picID = ref(0);
 function handlePicClick(pic_id) {
