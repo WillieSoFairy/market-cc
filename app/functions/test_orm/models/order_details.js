@@ -36,6 +36,10 @@ module.exports = function(sequelize, DataTypes) {
     pic_id: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    remark: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
