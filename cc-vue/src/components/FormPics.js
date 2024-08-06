@@ -96,4 +96,16 @@ async function del_draft(pic_id, upload_user) {
     }
     catch (err) { throw err; }
 }
-export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic, get_pic_detail, del_draft };
+
+async function filter_get_ent() {
+    try {
+        const { result } = await tcb.callFunction({
+            name: 'get_ent_names_draft', data: null
+        });
+        if (result.status !== 0) { throw result.info; }
+        const { ents } = result;
+        return ents.map((x) => { return { value: x.id, label: x.ent_name }; });
+    }
+    catch (err) { throw err; }
+}
+export { get_pic, upload_pics, query_pic_df, update_pic_info, bind_ent_pic, get_pic_detail, del_draft, filter_get_ent };
