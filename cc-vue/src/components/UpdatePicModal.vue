@@ -39,6 +39,7 @@ import { message } from 'ant-design-vue';
 import { DeleteOutlined } from '@ant-design/icons-vue'
 const openModal = defineModel('open');
 const props = defineProps(['picId']);
+const emits = defineEmits(['submit']);
 const pic_details = ref(null);
 const loading = ref(false);
 onBeforeUpdate(async () => {
@@ -68,6 +69,7 @@ async function handleDel() {
         message.error("删除失败");
     }
     loading.value = false;
+    emits('submit');
     openModal.value = false;
 }
 
