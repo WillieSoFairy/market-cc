@@ -42,6 +42,6 @@ async function query_data(where, limit, offset, order) {
     }
     catch (err) {
         console.log(err);
-        throw "Database error!"
+        throw "Database query error!"
     }
 }
