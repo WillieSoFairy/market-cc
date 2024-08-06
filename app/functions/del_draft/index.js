@@ -19,7 +19,7 @@ exports.main = async (event, context) => {
 }
 
 async function verift_del(pic_id, user) {
-    const sql = `SELECT \`pic_fileID\`,\`thumb_fileID\` FROM pictures WHERE id=? AND upload_user=? AND \`order_entry\`=0;`;
+    const sql = `SELECT \`pic_fileID\`,\`thumb_fileID\` FROM pictures WHERE id=? AND upload_user=? AND \`entered_orders\`=0;`;
     try {
         const [result] = await mysql.query(sql, [pic_id, user]);
         if (result.length !== 0) {

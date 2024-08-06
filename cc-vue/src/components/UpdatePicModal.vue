@@ -78,12 +78,12 @@ function reset_details() {
         remark: null,
         pic_url: null,
         order_date: null,
-        draft_status: null,
+        entered_orders: null,
         user: null
     };
 }
 
 const isOrderEntry = computed(() => {
-    return pic_details.value.draft_status === 1;
+    return pic_details.value.entered_orders > 0;
 });
 </script>

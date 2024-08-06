@@ -15,7 +15,7 @@ exports.main = async (event, context) => {
         return {
             pic_id: db_res.id, ent_id: db_res.ent_id, ent_name: db_res.ent_name,
             order_date: db_res.order_date, pic_url: url, user: db_res.upload_user,
-            remark: db_res.remark, draft_status: db_res.order_entry,
+            remark: db_res.remark, entered_orders: db_res.entered_orders,
             status: 0, info: null
         }
     }
