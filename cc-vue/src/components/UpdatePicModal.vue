@@ -13,7 +13,7 @@
                         <a-form-item label="备注"><a-input v-model:value="pic_details.remark" /></a-form-item>
                         <a-form-item>
                             <a-space>
-                                <a-popconfirm title="确认删除？">
+                                <a-popconfirm title="确认删除？" :disabled="isOrderEntry" v-model:open="pop_open">
                                     <template #icon>
                                         <DeleteOutlined style="color: red" />
                                     </template>
@@ -56,7 +56,9 @@ async function get_details() {
     finally { loading.value = false; }
 }
 
+const pop_open = ref(false);
 async function handleDel() {
+    pop_open.value = false;
     loading.value = true;
     const hide = message.loading("删除中...", 0);
     try {
