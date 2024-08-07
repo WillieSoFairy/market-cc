@@ -5,23 +5,22 @@
             <a-card title="筛选器" :bordered="false">
                 <a-form layout="vertical">
                     <a-form-item label="订单日期">
-                        <a-range-picker size="small" :placeholder="['开始日期', '结束日期']" />
+                        <a-range-picker size="small" v-model:value="filters.order_date"
+                            :placeholder="['开始日期', '结束日期']" />
                     </a-form-item>
                     <a-form-item label="企业名称">
-                        <a-select mode="multiple" placeholder="Please select"
-                            :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
-                            size="small" />
+                        <a-select mode="multiple" :options="filter_ents_options" size="small"
+                            :filter-option="filter_options" :allowClear="true" v-model:value="filters.ent_id" />
                     </a-form-item>
                     <a-form-item label="流程进度">
-                        <a-select mode="multiple" placeholder="Please select"
-                            :options="[...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))"
-                            size="small" />
+                        <a-select mode="multiple" :options="filter_flow" size="small" :allowClear="true"
+                            v-model:value="filters.flow" />
                     </a-form-item>
                 </a-form>
                 <a-form-item>
                     <a-space>
-                        <a-button type="primary" size="small">筛选</a-button>
-                        <a-button size="small">还原</a-button>
+                        <a-button type="primary" size="small" @click="handleFilter">筛选</a-button>
+                        <a-button size="small" @click="handleResetFilter">还原</a-button>
                     </a-space>
                 </a-form-item>
             </a-card>
@@ -61,15 +60,17 @@
         </a-col>
     </a-row>
     <upload-pic-drawer v-model:openDrawer="openDrawer" v-model:uploading="uploading" />
-    <update-pic-modal v-model:open="openModal" :pic-id="detail_picID" @submit="handleModalSubmitted" />
+    <update-pic-modal v-model:open="openModal" :pic-id="detail_picID" @submit="handleModalSubmitted"
+        :ents="filter_ents_options" />
 
 </template>
 <script setup>
 import { h, onMounted, ref, watch } from 'vue';
 import UploadPicDrawer from '../components/UploadPicDrawer.vue';
 import UpdatePicModal from '../components/UpdatePicModal.vue';
-import { query_pic_df } from '../components/FormPics';
+import { filter_get_ent, query_pic_df } from '../components/FormPics';
 import { ReloadOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 const openDrawer = ref(false);
 const openModal = ref(false);
 const draft_df = ref(null);
@@ -79,6 +80,32 @@ const pages = ref({
     pageSize: 5
 });
 const loading = ref(false);
+
+const filter_ents_options = ref(null);
+const filter_flow = ref([
+    { value: 0, label: '未标记' },
+    { value: 1, label: '已标记' },
+    { value: 2, label: '录入中' }]);
+function filter_options(input, option) {
+    return option.label.indexOf(input) >= 0;
+}
+const filters = ref({
+    order_date: [],
+    ent_id: [],
+    flow: []
+});
+async function handleFilter() {
+    await get_pics_list();
+}
+
+async function handleResetFilter() {
+    filters.value = {
+        order_date: [],
+        ent_id: [], flow: []
+    }
+    await get_pics_list();
+}
+
 onMounted(async () => { await get_pics_list(); });
 
 function handleDrawerOpen() {
@@ -86,13 +113,21 @@ function handleDrawerOpen() {
 }
 const uploading = ref(false);
 watch(uploading, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
-// watch(openModal, async (newV, oldV) => { if (oldV === true && newV === false) { await get_pics_list(); } });
 
 async function get_pics_list() {
     loading.value = true;
-    const { data, totalNum } = await query_pic_df(pages.value.current, null, [['create_time', 'DESC']], pages.value.pageSize);
-    draft_df.value = data;
-    pages.value.total = totalNum;
+    const where = {
+        order_date: filters.value.order_date?.map((x) => { return x.format("YYYY-MM-DD"); }),
+        ent_id: JSON.parse(JSON.stringify(filters.value.ent_id)),
+        flow: JSON.parse(JSON.stringify(filters.value.flow))
+    }
+    try {
+        const { data, totalNum } = await query_pic_df(pages.value.current, where, [['create_time', 'DESC']], pages.value.pageSize);
+        filter_ents_options.value = await filter_get_ent();
+        draft_df.value = data;
+        pages.value.total = totalNum;
+    }
+    catch { message.error("获取文稿失败"); }
     loading.value = false;
 }
 
