@@ -95,6 +95,7 @@ const filters = ref({
     flow: []
 });
 async function handleFilter() {
+    pages.value.current = 1;
     await get_pics_list();
 }
 
@@ -103,6 +104,7 @@ async function handleResetFilter() {
         order_date: [],
         ent_id: [], flow: []
     }
+    pages.value.current = 1;
     await get_pics_list();
 }
 
