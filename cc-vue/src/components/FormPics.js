@@ -56,6 +56,8 @@ async function update_pic_info(pic_id, param) {
             name: 'update_draft',
             data: { param: param, pic_id: pic_id }
         });
+        if (result.status !== 0) { throw result.info; }
+        return result.updatedID;
     }
     catch (err) { throw err; }
 }
