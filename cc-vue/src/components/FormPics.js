@@ -40,6 +40,7 @@ async function query_pic_df(page, where, order, limit) {
             name: 'query_drafts',
             data: { page: page, where: where, order: order, limit: limit }
         });
+        if (result.status !== 0) { throw result.info; }
         const fileIDs = result.data.map((x) => { return x.thumb_fileID; });
         if (fileIDs.length !== 0) {
             const { fileList } = await tcb.getTempFileURL({ fileList: fileIDs });
