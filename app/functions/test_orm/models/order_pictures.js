@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: true
     },
-    reamrk: {
+    remark: {
       type: DataTypes.TEXT,
       allowNull: true
     }

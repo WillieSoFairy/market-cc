@@ -57,7 +57,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    reamrk: {
+    remark: {
       type: DataTypes.TEXT,
       allowNull: true
     }

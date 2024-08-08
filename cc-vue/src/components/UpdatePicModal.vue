@@ -118,7 +118,7 @@ async function handleModify() {
         }
         if (remark_edited.value || orderDate_edited.value) {
             const param = {};
-            if (remark_edited.value) { param.reamrk = edit_details.value.remark; }
+            if (remark_edited.value) { param.remark = edit_details.value.remark; }
             if (orderDate_edited.value) { param.order_date = edit_details.value.order_date; }
             await update_pic_info(pic_details.value.pic_id, param);
         }
