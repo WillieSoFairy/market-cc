@@ -32,11 +32,14 @@
                         </a-form-item>
                     </a-form>
                 </a-row>
-                <a-row>
-                    <a-col :span="10">
+                <a-row align="middle">
+                    <a-col :span="4">
                         <a-button type="primary" @click="handleAddItem" v-if="!isEditing"
                             :disabled="addDisabled || undefinedEntName">新增项目</a-button>
                         <State2Struct v-model="LLMData" v-else />
+                    </a-col>
+                    <a-col :span="20">
+                        <a-typography-text type="secondary">备注：{{ pic.remark }}</a-typography-text>
                     </a-col>
                 </a-row>
                 <a-row>
@@ -59,7 +62,6 @@
 </template>
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import dayjs from 'dayjs';
 import DataTable from '../components/DataTable.vue';
 import { auth } from '../tcb/index.js';
 import { get_orderData, get_disabled_dates } from '../components/FormQueryOrder';
@@ -67,8 +69,6 @@ import State2Struct from '../components/State2Struct.vue';
 import { get_pic, bind_ent_pic } from '../components/FormPics.js'
 import { message } from 'ant-design-vue';
 
-
-// const now = dayjs(new Date());
 const orderData = ref(null);
 const order_date = ref(null);
 const undefinedEntName = ref(false);
@@ -80,7 +80,8 @@ const pic = ref({
     pic_url: null,
     ent_id: null,
     pageNum: 0,
-    total: 0
+    total: 0,
+    remark: null
 });
 const pageNum = ref(1);
 

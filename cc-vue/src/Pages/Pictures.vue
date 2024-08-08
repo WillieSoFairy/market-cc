@@ -145,7 +145,8 @@ const columns = [
     { key: 'thumb', dataIndex: 'thumb', width: '100px' },
     { key: 'ent_name', dataIndex: 'ent_name', title: '企业名称' },
     { key: 'order_date', dataIndex: 'order_date', title: '订单日期' },
-    { key: 'create_time', dataIndex: 'create_time', title: '上传时间' }
+    { key: 'create_time', dataIndex: 'create_time', title: '上传时间' },
+    { key: 'remark', dataIndex: 'remark', title: '备注', width: '300px' }
 ]
 </script>
 
