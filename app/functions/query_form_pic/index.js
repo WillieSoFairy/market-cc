@@ -16,7 +16,7 @@ exports.main = async (event, context) => {
         const details = await get_pic_detail(order_date, page);
         const pic_url = await get_pic_url(details.pic_fileID);
         return {
-            pic_id: details.pic_id,
+            pic_id: details.id,
             pic_url: pic_url,
             ent_id: details.ent_id,
             ent_name: details.ent_name,
