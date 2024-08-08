@@ -32,14 +32,16 @@
                         </a-form-item>
                     </a-form>
                 </a-row>
-                <a-row align="middle">
-                    <a-col :span="4">
+                <a-row>
+                    <a-col :span="24">
+                        <a-typography-text type="secondary">备注：{{ pic.remark }}</a-typography-text>
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="10">
                         <a-button type="primary" @click="handleAddItem" v-if="!isEditing"
                             :disabled="addDisabled || undefinedEntName">新增项目</a-button>
                         <State2Struct v-model="LLMData" v-else />
-                    </a-col>
-                    <a-col :span="20">
-                        <a-typography-text type="secondary">备注：{{ pic.remark }}</a-typography-text>
                     </a-col>
                 </a-row>
                 <a-row>
