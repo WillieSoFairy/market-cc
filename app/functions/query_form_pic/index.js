@@ -14,12 +14,13 @@ exports.main = async (event, context) => {
         const total = await query_pages(order_date);
         if (page > total) { throw "Pages overflow"; }
         const details = await get_pic_detail(order_date, page);
-        const pic_url = await get_pic_url(details.fileID);
+        const pic_url = await get_pic_url(details.pic_fileID);
         return {
             pic_id: details.pic_id,
             pic_url: pic_url,
             ent_id: details.ent_id,
             ent_name: details.ent_name,
+            remark: details.remark,
             pageNum: page, total: total, status: 0, info: null
         }
     }
@@ -39,7 +40,7 @@ async function get_pic_detail(order_date, pageNum) {
     const sql = `SELECT * FROM pictures WHERE order_date=? ORDER BY id LIMIT 1 OFFSET ?;`;
     try {
         const [result] = await mysql.query(sql, [order_date, pageNum - 1]);
-        return { pic_id: result[0].id, fileID: result[0].pic_fileID, ent_id: result[0].ent_id, ent_name: result[0].ent_name };
+        return result[0];
     }
     catch { throw "Query detail error"; }
 }
