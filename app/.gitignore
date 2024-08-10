@@ -34,9 +34,11 @@ build/Release
 
 # Dependency directories
 node_modules/
+pypkg/
 
 # Optional npm cache directory
 .npm
+__pycache__/
 
 # Optional eslint cache
 .eslintcache
@@ -55,3 +57,4 @@ node_modules/
 
 *tcb_custom_login_key.json
 *db.config.js
+*dbConfig.py
