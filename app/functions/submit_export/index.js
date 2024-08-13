@@ -5,6 +5,7 @@ const dbConfig = require("./db.config");
 const mysql = require('mysql2/promise').createPool(dbConfig);
 
 const filePath = 'export_sheets';
+const exportTempPath = 'export_temp';
 
 exports.main = async (event, context) => {
     const order_date = event.order_date;
@@ -16,7 +17,10 @@ exports.main = async (event, context) => {
         const { files, path_date } = await create_sheets(order_date, batch, deliver_date);
         const fileIDs = await store_files(files, path_date);
         await sync_fileID_db(fileIDs);
-        return { files: files, status: 0, info: null };
+        const { zipFile, zipName } = await get_merged_zip_file(files.map(x => x.export_id),
+            files.map((x) => { return { file: x.file, name: x.name } }), path_date, batch, 0)
+        const url = await get_mergedFile_url(zipFile, zipName)
+        return { file_url: url, status: 0, info: null };
     }
     catch (err) { return { status: -1, info: err }; };
 }
@@ -54,7 +58,7 @@ async function create_sheets(order_date, batch, deliver_date) {
         const files = result.files.map((x) => {
             return {
                 export_id: x.id,
-                file: Buffer.from(x.file, 'base64'),
+                file: x.file,
                 name: `${x.id}_${x.name}`
             }
         });
@@ -68,7 +72,7 @@ async function store_files(files_list, path_date) {
     for (const file of files_list) {
         const { fileID } = await app.uploadFile({
             cloudPath: `${filePath}/${path_date}/${file.name}`,
-            fileContent: file.file
+            fileContent: Buffer.from(file.file, 'base64')
         });
         fileIDs.push({ export_id: file.export_id, fileID: fileID });
     }
@@ -83,4 +87,30 @@ async function sync_fileID_db(fileIDs) {
         }
     }
     catch { console.log(err); throw "update file error" }
+}
+
+async function get_merged_zip_file(ids, files, path_date, batch, export_type) {
+    try {
+        const { result } = await app.callFunction({
+            name: 'merge_sheets',
+            data: {
+                ids: ids, path_date: path_date, batch: batch,
+                files_list: files, export_type: export_type
+            }
+        });
+        if (result.status !== 0) { throw result.info; }
+        return { zipFile: result.file, zipName: result.name };
+    }
+    catch (err) { console.log(err); throw err }
+}
+
+async function get_mergedFile_url(file, name) {
+    const { fileID } = await app.uploadFile({
+        cloudPath: `${exportTempPath}/${name}`,
+        fileContent: Buffer.from(file, 'base64')
+    });
+    const { fileList } = await app.getTempFileURL({
+        fileList: [{ fileID: fileID, maxAge: maxAge }]
+    });
+    return fileList[0].tempFileURL;
 }
